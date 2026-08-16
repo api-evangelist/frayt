@@ -1,0 +1,73 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/_original/frayt-api-openapi-original.json (OpenAPI callbacks) + https://api.frayt.com/docs/api/v2.2
+spec_type: null
+note: >-
+  FRAYT publishes NO AsyncAPI document — probed /asyncapi.yaml, /asyncapi.json and
+  the docs host, all 404. It DOES ship a real, machine-readable webhook contract, and
+  in an unusually good place: the webhook is declared as an OpenAPI 3.0 `callbacks`
+  object on three operations, with the payload bound by $ref to the same
+  MatchResponse schema the GET returns. That means a webhook subscriber can generate
+  its receiver directly from the published spec — a stronger position than most
+  providers who describe webhooks only in prose. This artifact is the derived
+  catalog of that surface; it is not an AsyncAPI document and is not presented as one.
+surface:
+  transport: http
+  direction: provider-to-subscriber
+  delivery: POST to a single fixed subscriber URL
+  subscription_model: provider-configured
+  subscription_note: >-
+    There is NO self-service webhook subscription API. The destination is stored on
+    the FRAYT side as `match.shipper.location.company.webhook_url` and is configured
+    by the FRAYT team — the docs say "To receive webhook updates from FRAYT, contact
+    the FRAYT team for setup and configuration at dev@frayt.com". One URL per
+    company location, optional custom headers on the payload.
+  payload_schema: MatchResponse
+  payload_note: >-
+    The webhook body is byte-for-byte the same envelope as GET /api/v2.2/matches/{id}
+    — `{"response": {...Match...}}` — so one parser serves both surfaces.
+  expected_response: 'HTTP 200 from the subscriber acknowledges the callback'
+  retries: undocumented
+  signing: undocumented
+  note_security: >-
+    FRAYT documents no HMAC signature, no shared secret and no replay protection on
+    webhook delivery; the only stated authentication affordance is optional custom
+    headers included in the payload configuration. Subscribers should treat the
+    payload as unauthenticated and re-read the Match via GET before acting on it.
+events:
+- name: match_update
+  declared_on:
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.create
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  summary: Send back Match transitions
+  description: >-
+    Fires every time the Match state transitions, a child stop state transitions, or
+    the driver's location is updated while en route. Only sent when webhooks are
+    configured for the company.
+  payload: MatchResponse
+  triggers:
+  - match state transition
+  - match stop state transition
+  - driver location update while en route
+match_states:
+  field: response.state
+  transition_record: response.state_transition (from, to, notes, match_id, stop_id, updated_at)
+  happy_path: [pending, inactive, scheduled, assigning_driver, offered, accepted, en_route_to_pickup,
+    arrived_at_pickup, picked_up, completed, charged]
+  enum: [accepted, admin_canceled, arrived_at_pickup, arrived_at_return, assigning_driver,
+    canceled, charged, completed, driver_canceled, en_route_to_pickup, en_route_to_return,
+    inactive, offer_not_accepted, offered, pending, picked_up, scheduled, unable_to_pickup]
+  terminal: [charged, admin_canceled, canceled, unable_to_pickup]
+  note: >-
+    `driver_canceled` is NOT terminal — the driver removed themselves and FRAYT
+    re-offers the Match to the marketplace. Subscribers that treat it as a failure
+    will cancel deliveries that were about to succeed.
+stop_states:
+  field: response.stops[].state
+  happy_path: [pending, en_route, arrived, signed, delivered]
+  enum: [arrived, delivered, en_route, pending, re_routed, returned, signed, undeliverable, unserved]
+probes:
+- {url: 'https://api.frayt.com/asyncapi.yaml', status: 404}
+- {url: 'https://api.frayt.com/asyncapi.json', status: 404}
+- {url: 'https://www.frayt.com/asyncapi.yaml', status: 404}

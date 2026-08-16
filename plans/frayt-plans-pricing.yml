@@ -1,0 +1,54 @@
+generated: '2026-08-16'
+method: searched
+source: https://www.frayt.com/platform/faqs
+also_checked:
+- {url: 'https://www.frayt.com/pricing', status: 404}
+- {url: 'https://www.frayt.com/', status: 200, result: no pricing link in nav or footer}
+- {url: 'https://www.frayt.com/frayt-api', status: 200, result: no API pricing or plan tiers}
+- {url: 'https://www.frayt.com/3pl/api', status: 200, result: no API pricing or plan tiers}
+plan_count: 0
+note: >-
+  FRAYT publishes NO plans, NO tiers and NO rate card. There is no /pricing page —
+  it returns 404 and no pricing link appears anywhere in the site navigation or
+  footer. Pricing is transactional and quoted per shipment: the FAQ states "each
+  delivery's cost depends on dimensions, weight, and the mileage of each shipment",
+  and the only way to see a price is to call the API's own estimate endpoint
+  (POST /api/v2.2/matches/estimate) or use the platform's instant-quote UI. There is
+  no separate charge for API access itself — the API is an ordering channel for the
+  delivery service, not a metered product with its own plan. Volume customers
+  negotiate "termed billing" with a sales rep. This is an honest zero, not a gap in
+  the search.
+pricing_model:
+  type: usage-based-quoted
+  unit: per delivery (per Match)
+  drivers_of_price: [distance/mileage, weight, dimensions, service level, vehicle class, accessorials]
+  api_metering: none
+  api_surcharge: none
+  quote_mechanism:
+    api: POST https://api.frayt.com/api/v2.2/matches/estimate
+    ui: FRAYT Platform instant estimate
+  note: >-
+    The estimate endpoint returns a real dollar amount before the delivery is
+    authorized, which makes price discovery fully programmatic even though no rate
+    card is published.
+service_levels:
+- {name: Rush, description: 'Fastest pickup and drop-off', price: quoted}
+- {name: Flex, description: 'Flexible option with a four-hour delivery window', price: quoted}
+- {name: End-of-Day, description: 'Delivered by 5pm the same day', price: quoted}
+  # Source: https://www.frayt.com/llms.txt and https://www.frayt.com/last-mile-delivery
+billing:
+  default: per delivery
+  enterprise: termed billing, negotiated with a sales representative
+  contact: https://www.frayt.com/contact
+fees:
+- name: Cancellation charge
+  amount: up to 50% of the quoted fee
+  source: https://www.frayt.com/eula
+  note: 'Per the EULA: cancellations "may be subject to a cancellation charge, not to exceed 50% of quoted Fee"; fees are non-refundable.'
+- name: Load fee
+  amount: quoted
+  note: 'Per-stop, set by the `has_load_fee` boolean on MatchStop in the API.'
+- name: Driver tip
+  amount: caller-set
+  note: 'Set or updated via PATCH /api/v2.2/matches/{match_id}/stops/{stop_id}.'
+plans: []

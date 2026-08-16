@@ -1,0 +1,75 @@
+generated: '2026-08-16'
+method: derived
+status: candidate
+source: openapi/frayt-matches-openapi.yml, openapi/frayt-match-estimates-openapi.yml, openapi/frayt-oauth-openapi.yml
+search_evidence:
+- {url: 'https://registry.modelcontextprotocol.io/v0/servers?search=frayt', status: 200, result: 0 servers}
+- {url: 'https://registry.npmjs.org/-/v1/search?text=frayt+mcp', status: 200, result: no FRAYT package}
+- {url: 'https://mcp.frayt.com/', status: 0, result: NXDOMAIN}
+- {url: 'https://api.frayt.com/mcp', status: 404}
+- {url: 'https://www.frayt.com/mcp', status: 404}
+note: >-
+  FRAYT ships no MCP server — hosted or stdio. The tools below are a CANDIDATE set
+  derived one-to-one from the eight operations in FRAYT's own published OpenAPI 2.2.
+  They are a proposal for what a FRAYT MCP server would expose, not something FRAYT
+  operates. No endpoint URL is asserted, because none exists.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: oauth
+  verified: searched
+server:
+  name: frayt
+  transport: null
+  url: null
+tools:
+- name: get_delivery_estimate
+  description: Price a delivery (a FRAYT "estimate") without authorizing it into a Match.
+  source_operation: openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.create
+  action_class: read
+- name: authorize_estimate
+  description: Update and/or authorize an existing estimate, turning it into a live Match.
+  source_operation: openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.update
+  action_class: write
+  consequence: physical
+- name: create_match
+  description: Create an already-authorized Match — tender a delivery straight to the driver marketplace.
+  source_operation: openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.create
+  action_class: write
+  consequence: physical
+- name: get_match
+  description: Retrieve a Match by id, including its stops, driver, state and state transitions.
+  source_operation: openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.show
+  action_class: read
+- name: update_match
+  description: Update a Match in flight (addresses, notes, scheduling, items).
+  source_operation: openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+  action_class: write
+  consequence: physical
+- name: cancel_match
+  description: Cancel a Match. May incur a cancellation charge depending on driver state.
+  source_operation: openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  action_class: write
+  consequence: physical
+- name: tip_driver
+  description: Update the driver tip on a Match stop.
+  source_operation: openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchStopController.update
+  action_class: write
+  consequence: physical
+- name: get_access_token
+  description: Exchange the FRAYT client_id and secret for a bearer token.
+  source_operation: openapi/frayt-oauth-openapi.yml#FraytElixirWeb.API.OauthController.authenticate
+  action_class: write
+  note: >-
+    Normally an MCP server would handle this internally rather than expose it as a
+    tool; listed here for completeness of the crosswalk.
+x-pointer-policy: >-
+  NO `MCPServer` pointer is wired into apis.yml for this file. The mcp_server_present
+  check asserts the PROVIDER operates an MCP server; FRAYT does not (deployment.mode:
+  none). Wiring the pointer for a derived candidate would credit FRAYT with an agent
+  surface it has never shipped. This file exists to record the verified absence and to
+  hold the candidate tool shape for a future round, not to score a check.
+  No tool-crosswalk artifact was written either: the crosswalk emit condition is an
+  MCP server OR a GraphQL endpoint alongside the OpenAPI, and FRAYT has neither.

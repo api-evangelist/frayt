@@ -1,0 +1,58 @@
+generated: '2026-08-16'
+method: probed
+source: https://sandbox.api.frayt.com/docs/api/v2.2
+note: >-
+  FRAYT runs a genuine, separately-hosted sandbox. Verified by fetching the OpenAPI
+  from both environments: https://sandbox.api.frayt.com/api/v2.2/openapi and
+  https://api.frayt.com/api/v2.2/openapi return byte-identical documents apart from
+  the single `servers[0].url` value — so the sandbox is contract-complete against
+  production, not a reduced subset. Both hosts serve their own Swagger UI.
+  Credentials are NOT self-service: there is no signup form for API access. FRAYT
+  issues a client_id and secret by hand on request, and the spec, the API guide and
+  the 3PL page each give a different address to ask at.
+environments:
+- name: sandbox
+  base_url: https://sandbox.api.frayt.com/api/v2.2/
+  docs: https://sandbox.api.frayt.com/docs/api/v2.2
+  openapi: https://sandbox.api.frayt.com/api/v2.2/openapi
+  status: 200
+- name: production
+  base_url: https://api.frayt.com/api/v2.2/
+  docs: https://api.frayt.com/docs/api/v2.2
+  openapi: https://api.frayt.com/api/v2.2/openapi
+  status: 200
+separation:
+  model: separate-host
+  key_prefixes: none
+  note: >-
+    Test and live are separated by HOSTNAME, not by a key prefix or a mode flag. A
+    credential is bound to its environment, so there is no `sk_test_`/`sk_live_`
+    style tell in the token itself — a client that points the wrong base URL at the
+    right key simply fails to authenticate. Callers should assert on the host.
+access:
+  self_service: false
+  request_via:
+  - {contact: 'dev@frayt.com', source: 'OpenAPI info.description (Authentication section)'}
+  - {contact: 'api@frayt.com', source: 'https://www.frayt.com/frayt-api'}
+  - {contact: 'integrations@frayt.com', source: 'https://www.frayt.com/3pl/api'}
+  credentials_issued: [client_id, secret]
+  note: >-
+    Three different published contact addresses for the same request is a real
+    onboarding friction point worth flagging to FRAYT.
+test_values:
+  published: false
+  note: >-
+    FRAYT publishes NO magic test values — no test addresses, no simulated driver,
+    no state-forcing triggers, no fixture tooling and no documented way to advance a
+    Match through its state machine in sandbox. The spec's request examples use
+    FRAYT's own Cincinnati HQ (708 Walnut Street, Cincinnati OH 45202) and far-future
+    2030 timestamps, but these are illustrative payloads in the OpenAPI, not
+    published test fixtures, and are recorded here as such rather than as test data.
+  example_addresses_in_spec:
+  - '708 Walnut Street, 500, Cincinnati, OH 45202, US (FRAYT HQ) — used as origin_address in the MatchRequest example'
+  example_timestamps_in_spec: ['2030-02-01T00:00:00Z pickup_at', '2030-02-01T00:30:00Z dropoff_at']
+gaps:
+- No published test card / test payment values (billing is invoiced, not card-on-file via API).
+- No test clock or time simulation for scheduled deliveries.
+- No documented trigger to force a Match state transition in sandbox.
+- No self-service sandbox signup.

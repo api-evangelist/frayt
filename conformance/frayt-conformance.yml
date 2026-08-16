@@ -1,0 +1,86 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/_original/frayt-api-openapi-original.json + live probes of api.frayt.com
+note: >-
+  Standards conformance derived from FRAYT's own published OpenAPI and from live
+  responses. FRAYT publishes no certification or compliance program page — no trust
+  center, no SOC 2 / ISO 27001 / PCI claim was found on frayt.com, trust.frayt.com
+  does not resolve, and probe-security-programs.py returned no hit. Consequently NO
+  `Compliance` and NO `TrustCenter` pointer is wired: asserting one would credit
+  FRAYT with a published compliance posture it does not have.
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: 'Provider serves OpenAPI 3.0.0 at https://api.frayt.com/api/v2.2/openapi (HTTP 200, application/json, 8 operations, 33 component schemas)'
+- id: openapi-callbacks
+  conforms: true
+  evidence: 'Webhook payload declared as an OpenAPI `callbacks` object $ref-ing MatchResponse on three Match operations'
+- id: rest
+  conforms: true
+  evidence: Resource-oriented JSON over HTTPS with GET/POST/PATCH/DELETE semantics
+- id: oauth2
+  conforms: false
+  evidence: >-
+    FRAYT calls its token exchange "OAuth" and the path is /api/v2.2/oauth/token, but
+    it is NOT RFC 6749. The request body is a custom JSON object {client_id, secret}
+    rather than form-encoded grant_type=client_credentials; the response is
+    {"response": {"token": "..."}} rather than the RFC's
+    {access_token, token_type, expires_in}; there is no grant_type, no scope, no
+    expiry field, and the securityScheme in the spec is declared as `http`/`bearer`,
+    not `oauth2`. Treat it as a proprietary token exchange.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on every host
+- id: rfc6750-bearer
+  conforms: true
+  evidence: 'Token is presented as `Authorization: Bearer <token>`; securityScheme type http, scheme bearer'
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are application/json with a custom {code, message} envelope, not
+    application/problem+json. See errors/frayt-problem-types.yml.
+- id: json-api
+  conforms: partial
+  evidence: >-
+    Only the 422 "Invalid Parameters" shape follows JSON:API error conventions
+    (errors[] with title/detail/source.pointer); the rest of the API does not.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on api.frayt.com, sandbox.api.frayt.com and www.frayt.com
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation header support documented or observed
+- id: rfc6585-rate-limit
+  conforms: false
+  evidence: No 429 response documented; no Retry-After or RateLimit-* headers observed on live responses
+- id: idempotency-key
+  conforms: false
+  evidence: No Idempotency-Key header or parameter anywhere in the spec
+- id: llms-txt
+  conforms: true
+  evidence: 'https://www.frayt.com/llms.txt returns HTTP 200 with a well-formed llms.txt (H1, blockquote summary, sectioned link lists)'
+- id: hsts
+  conforms: true
+  evidence: 'Strict-Transport-Security max-age=31536000 observed on www.frayt.com and api.frayt.com'
+- id: dnssec
+  conforms: true
+  evidence: DNSKEY present for frayt.com (probe-domain-security.py)
+- id: dmarc
+  conforms: true
+  evidence: DMARC record present with policy reject
+- id: caa
+  conforms: false
+  evidence: No CAA record published for frayt.com
+- id: a2a
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json return 404 on every host
+- id: mcp
+  conforms: false
+  evidence: No MCP server published; 0 results in the MCP registry and on npm
+compliance_program:
+  published: false
+  trust_center: null
+  certifications: []
+  evidence:
+  - {url: 'https://trust.frayt.com/', status: 0, result: NXDOMAIN}
+  - {url: 'https://www.frayt.com/', status: 200, result: no compliance or certification claims in nav or footer}

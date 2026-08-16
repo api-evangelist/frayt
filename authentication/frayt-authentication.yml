@@ -1,0 +1,81 @@
+generated: '2026-08-16'
+method: searched
+docs: https://api.frayt.com/docs/api/v2.2
+source: >-
+  openapi/frayt-matches-openapi.yml, openapi/frayt-match-estimates-openapi.yml,
+  openapi/frayt-oauth-openapi.yml, plus the Authentication section of the FRAYT
+  Client API documentation and live probes of the token endpoint.
+note: >-
+  FRAYT names its token endpoint "oauth" and its docs call the mechanism OAuth, but
+  it is NOT RFC 6749 and the OpenAPI itself does not declare an `oauth2`
+  securityScheme — the only scheme in the spec is `http`/`bearer`. The token
+  exchange is a proprietary JSON POST. Because there is no oauth2 scheme and no
+  scopes anywhere in the spec or docs, NO scopes/ artifact and no `OAuthScopes`
+  pointer were written for this provider; derive-oauth-scopes.py confirmed zero
+  oauth2 schemes and zero scopes.
+summary:
+  types: [http]
+  http_schemes: [bearer]
+  api_key_in: []
+  oauth2_flows: []
+  scopes_published: false
+  self_service_signup: false
+schemes:
+- name: authorization
+  type: http
+  scheme: bearer
+  description: Bearer token obtained from the FRAYT token endpoint.
+  header: Authorization
+  format: 'Bearer <token>'
+  applied_to: all operations except POST /api/v2.2/oauth/token
+  sources:
+  - openapi/frayt-match-estimates-openapi.yml
+  - openapi/frayt-matches-openapi.yml
+  - openapi/frayt-oauth-openapi.yml
+token_exchange:
+  operation: FraytElixirWeb.API.OauthController.authenticate
+  endpoint: POST https://api.frayt.com/api/v2.2/oauth/token
+  sandbox_endpoint: POST https://sandbox.api.frayt.com/api/v2.2/oauth/token
+  request_media_type: application/json
+  request_schema: Oauth Request
+  request_fields:
+  - {name: client_id, required: true, description: Client ID issued by FRAYT}
+  - {name: secret, required: false, description: Secret key (optional if client_secret is present)}
+  - {name: client_secret, required: false, description: Client secret (optional if secret is present)}
+  response_schema: Oauth Response
+  response_shape: '{"response": {"token": "<bearer token>"}}'
+  rfc6749_compliant: false
+  deviations:
+  - No `grant_type` parameter; the grant is implicit.
+  - Request body is JSON, not application/x-www-form-urlencoded.
+  - 'Response is `{response: {token}}`, not `{access_token, token_type, expires_in}`.'
+  - No `expires_in` is returned, so token lifetime is undiscoverable from the response.
+  - No `scope` parameter and no scopes are defined.
+  - Either `secret` or `client_secret` is accepted for the same value.
+  failure_modes:
+  - {status: 403, meaning: 'Invalid credentials — note this is 403, not the usual 401'}
+  - {status: 422, meaning: 'Invalid parameters (e.g. missing client_id)'}
+  observed:
+  - {url: 'https://api.frayt.com/api/v2.2/oauth/token', method: POST, body: 'dummy client_id/secret', status: 403}
+credential_issuance:
+  self_service: false
+  process: >-
+    FRAYT issues a client_id and secret manually on request. There is no developer
+    signup form and no key-management console documented.
+  contacts:
+  - {email: 'dev@frayt.com', source: 'OpenAPI info.description'}
+  - {email: 'api@frayt.com', source: 'https://www.frayt.com/frayt-api'}
+  - {email: 'integrations@frayt.com', source: 'https://www.frayt.com/3pl/api'}
+  environments_note: >-
+    Credentials are environment-bound. Sandbox and production are separated by
+    hostname, not by a key prefix. See sandbox/frayt-sandbox.yml.
+token_lifetime:
+  documented: false
+  note: >-
+    Neither the spec nor the docs state how long a bearer token is valid, and the
+    token response carries no expiry. Clients must detect expiry reactively by
+    handling a 403 and re-issuing.
+discovery:
+  openid_configuration: {status: 404}
+  oauth_authorization_server: {status: 404}
+  oauth_protected_resource: {status: 404}

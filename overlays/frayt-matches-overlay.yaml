@@ -1,0 +1,63 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the FRAYT Client API — Matches
+  version: 1.0.0
+extends: openapi/frayt-matches-openapi.yml
+x-generated: '2026-08-16'
+x-method: generated
+x-source: >-
+  Derived from FRAYT's own published OpenAPI at https://api.frayt.com/api/v2.2/openapi
+  plus live response observation. This overlay records API Evangelist's enhancements
+  only; it never mutates the harvested original at
+  openapi/_original/frayt-api-openapi-original.json.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: frayt
+    x-apievangelist-source: https://api.frayt.com/api/v2.2/openapi
+    x-apievangelist-harvested: '2026-08-16'
+    contact:
+      name: FRAYT API Support
+      email: dev@frayt.com
+      url: https://www.frayt.com/frayt-api
+    x-error-envelope: '{code, message} — not RFC 9457; validation errors use {errors: [{title, detail, source.pointer}]}'
+    x-idempotency: none — no Idempotency-Key is supported on any write operation
+    x-rate-limits: none published; no 429 documented and no RateLimit-*/Retry-After headers observed
+- target: $
+  update:
+    servers:
+    - url: https://api.frayt.com
+      description: Production
+    - url: https://sandbox.api.frayt.com
+      description: Sandbox — contract-identical to production, credentials issued separately by FRAYT
+- target: $.paths['/api/v2.2/matches'].post
+  update:
+    x-agentic-access:
+      action-class: acting
+      consequence: physical
+      note: >-
+        Creating a Match dispatches a real driver to a real pickup and incurs a real
+        charge. With no idempotency key available, an agent MUST NOT retry this
+        request automatically on a timeout — reconcile via GET /matches/{id} instead.
+      human-in-the-loop: recommended
+- target: $.paths['/api/v2.2/matches/{id}'].delete
+  update:
+    x-agentic-access:
+      action-class: acting
+      consequence: physical
+      note: >-
+        Cancellation may incur a charge of up to 50% of the quoted fee per FRAYT's
+        EULA, and is irreversible.
+      human-in-the-loop: recommended
+- target: $.paths['/api/v2.2/matches/{id}'].get
+  update:
+    x-agentic-access:
+      action-class: connected
+      consequence: read
+    x-response-envelope: '{"response": {...Match...}} — identical to the webhook payload'
+- target: $.paths['/api/v2.2/matches/{match_id}/stops/{stop_id}'].patch
+  update:
+    x-agentic-access:
+      action-class: acting
+      consequence: physical
+      note: Updates the driver tip, which is a monetary change.

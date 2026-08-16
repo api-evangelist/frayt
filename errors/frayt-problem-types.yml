@@ -1,0 +1,99 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/_original/frayt-api-openapi-original.json + live unauthenticated probe of https://api.frayt.com/api/v2.2/matches/{id}
+format: custom
+note: >-
+  FRAYT does NOT use RFC 9457 problem+json. Every 4xx response is
+  `application/json` carrying a flat two-field envelope — `{"code": "<machine
+  code>", "message": "<human readable>"}` — confirmed live: an unauthenticated GET
+  of /api/v2.2/matches/{id} returned HTTP 401 with body
+  {"code":"unauthenticated","message":"You are not logged in"}. The one exception is
+  the 422 "Invalid Parameters" shape used on validation failures, which is a JSON:API
+  style `{"errors": [{"title", "detail", "source": {"pointer"}}]}` array — so the
+  API carries TWO distinct error envelopes and a client must branch on status to
+  parse. No 429 response, no Retry-After and no rate-limit schema appear anywhere in
+  the spec. FRAYT publishes no standalone error-code reference page, so the `code`
+  values below are only those the spec's own examples emit; the full vocabulary of
+  `code` strings is not published.
+envelopes:
+- name: standard
+  media_type: application/json
+  shape: '{code: string, message: string}'
+  applies_to: [400, 401, 403, 404, 422]
+- name: validation
+  media_type: application/json
+  shape: '{errors: [{title: string, detail: string, source: {pointer: string}}]}'
+  applies_to: [422]
+  schema: Invalid Parameters
+problems:
+- status: 400
+  code: null
+  title: Bad Request
+  detail: There is an issue with your request.
+  schema: Bad Request
+  source_operations:
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+- status: 401
+  code: unauthenticated
+  title: Unauthorized
+  detail: No credentials were provided.
+  remediation: >-
+    POST client_id + secret to /api/v2.2/oauth/token and pass the returned token as
+    `Authorization: Bearer <token>`.
+  schema: Unauthorized
+  observed_live: true
+  source_operations:
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.create
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.show
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchStopController.update
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.create
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.update
+- status: 403
+  code: forbidden
+  title: Forbidden
+  detail: Invalid or expired credentials were provided, or permissions are insufficient.
+  remediation: >-
+    Re-issue a bearer token. The OAuth token endpoint itself returns 403 (not 401)
+    when client_id/secret are wrong — an unusual choice worth handling explicitly.
+  schema: Forbidden
+  observed_live: true
+  source_operations:
+  - openapi/frayt-oauth-openapi.yml#FraytElixirWeb.API.OauthController.authenticate
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.show
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchStopController.update
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.update
+- status: 404
+  code: not_found
+  title: Not Found
+  detail: Unable to find resource.
+  schema: Not Found
+  source_operations:
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.show
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.update
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.delete
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchStopController.update
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.update
+- status: 422
+  code: unprocessible_entity
+  title: Unprocessable Entity
+  detail: >-
+    Problematic parameters were passed. On the Match/Estimate write paths this
+    returns the JSON:API-style `errors[]` array with a `source.pointer` per field;
+    on the OAuth endpoint it returns the flat {code,message} envelope.
+  schema: [Invalid Parameters, Unprocessible Entity]
+  note: FRAYT spells this "Unprocessible" in both the schema title and the code value.
+  source_operations:
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchController.create
+  - openapi/frayt-matches-openapi.yml#FraytElixirWeb.API.V2x2.MatchStopController.update
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.create
+  - openapi/frayt-match-estimates-openapi.yml#FraytElixirWeb.API.V2x2.MatchEstimateController.update
+  - openapi/frayt-oauth-openapi.yml#FraytElixirWeb.API.OauthController.authenticate
+gaps:
+- No 5xx response is documented on any operation.
+- No 429 / rate-limit response is documented.
+- No published registry of `code` string values.

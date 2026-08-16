@@ -1,0 +1,38 @@
+generated: '2026-08-16'
+method: generated
+source: >-
+  Generated from FRAYT's own published OpenAPI 2.2
+  (https://api.frayt.com/api/v2.2/openapi) plus the conventions, errors and webhook
+  artifacts in this repo. Every operationId referenced was verified verbatim against
+  the spec. FRAYT publishes no AGENTS.md or skill files of its own — probed
+  www.frayt.com and api.frayt.com.
+skills:
+- file: frayt-quote-and-book-delivery.md
+  name: Quote and book a FRAYT delivery
+  description: >-
+    OAuth token exchange, then the estimate -> authorize path that turns a price into
+    a dispatched driver.
+  api: openapi/frayt-match-estimates-openapi.yml
+  operations:
+  - FraytElixirWeb.API.OauthController.authenticate
+  - FraytElixirWeb.API.V2x2.MatchEstimateController.create
+  - FraytElixirWeb.API.V2x2.MatchEstimateController.update
+- file: frayt-track-delivery-lifecycle.md
+  name: Track a FRAYT delivery through its lifecycle
+  description: >-
+    Read Match and stop state, interpret the state machines correctly (driver_canceled
+    is not terminal), and consume the match_update webhook safely.
+  api: openapi/frayt-matches-openapi.yml
+  operations:
+  - FraytElixirWeb.API.V2x2.MatchController.show
+- file: frayt-amend-or-cancel-delivery.md
+  name: Amend, tip, or cancel a FRAYT delivery
+  description: >-
+    Edit a live Match, set a per-stop driver tip, or cancel — with the up-to-50%
+    cancellation charge and the no-idempotency retry rules.
+  api: openapi/frayt-matches-openapi.yml
+  operations:
+  - FraytElixirWeb.API.V2x2.MatchController.update
+  - FraytElixirWeb.API.V2x2.MatchStopController.update
+  - FraytElixirWeb.API.V2x2.MatchController.delete
+  - FraytElixirWeb.API.V2x2.MatchController.show

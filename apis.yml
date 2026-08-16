@@ -1,23 +1,125 @@
 aid: frayt
 name: FRAYT
-description: 'FRAYT is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand
+  and scheduled middle-mile and last-mile delivery marketplace that connects shippers
+  to a vetted nationwide network of owner-operator drivers running everything from
+  cars and midsize vehicles to pickups, cargo vans and box trucks. The FRAYT Client
+  API is a versioned REST API (v2.2) over JSON, secured with OAuth 2.0 client-credentials
+  bearer tokens, that lets a TMS, ERP or storefront price a delivery as an "estimate",
+  authorize it into a "match", track it through the driver lifecycle, tip a driver
+  and cancel it — with webhook callbacks defined in the OpenAPI itself for real-time
+  match and driver-location updates. A full sandbox environment mirrors production.'
 url: https://raw.githubusercontent.com/api-evangelist/frayt/refs/heads/main/apis.yml
+image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-16'
 modified: '2026-08-16'
 tags:
 - Company
-apis: []
+- Last Mile Delivery
+- Logistics
+- Courier
+- On Demand Delivery
+- Shipping
+- Freight
+- Supply Chain
+- Transportation
+- Third Party Logistics
+- Delivery Tracking
+- Webhooks
+apis:
+- name: FRAYT Client API
+  description: 'REST API (v2.2) for FRAYT''s on-demand and scheduled delivery marketplace.
+    Price a delivery with the match-estimate endpoints, authorize an estimate into
+    a Match, retrieve and update a Match, update a stop to add a driver tip, and cancel
+    a Match. OAuth 2.0 client-credentials issues the bearer token every other call
+    requires. Webhook callbacks (match_update) are declared inline in the OpenAPI so
+    subscribers receive the full Match payload on every state transition.'
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - Last Mile Delivery
+  - Logistics
+  - Courier
+  - Delivery
+  - Shipping
+  - Freight
+  - Routing
+  - Webhooks
+  - OAuth2
+  properties:
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: OpenAPI
+    url: openapi/frayt-matches-openapi.yml
+  - type: OpenAPI
+    url: openapi/frayt-match-estimates-openapi.yml
+  - type: OpenAPI
+    url: openapi/frayt-oauth-openapi.yml
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
+  - type: Overlay
+    url: overlays/frayt-matches-overlay.yaml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/frayt-agentic-access.yml
+- type: DomainSecurity
+  url: security/frayt-domain-security.yml
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://www.frayt.com/
+- type: Blog
+  url: https://www.frayt.com/resources/blog
+- type: Support
+  url: https://www.frayt.com/contact
+- type: HelpCenter
+  url: https://www.frayt.com/platform/faqs
+- type: GitHubOrganization
+  url: https://github.com/Frayt-Technologies
+- type: TermsOfService
+  url: https://www.frayt.com/eula
+- type: PrivacyPolicy
+  url: https://www.frayt.com/privacy-policy
+- type: SignUp
+  url: https://www.frayt.app/
+- type: LLMsTxt
+  url: llms/frayt-llms.txt
+- type: Packages
+  url: packages/frayt-packages.yml
+- type: Lifecycle
+  url: lifecycle/frayt-lifecycle.yml
+- type: Conformance
+  url: conformance/frayt-conformance.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Plans
+  url: plans/frayt-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/frayt-rate-limits.yml
+x-enrichment:
+  date: '2026-08-16'
+  status: enriched
+  artifacts_added: 17
+  pass: local-v1

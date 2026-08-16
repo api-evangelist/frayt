@@ -1,0 +1,50 @@
+generated: '2026-08-16'
+method: probed
+source: live GET of the /.well-known/ discovery surface on every FRAYT host
+note: >-
+  Every /.well-known/ path returned 404 on all three FRAYT hosts. This file records
+  a verified ABSENCE, not a presence — no WellKnown or SecurityTxt pointer is wired
+  into apis.yml, because the provider serves no document at any of these paths.
+  www.frayt.com (Webflow) answers /.well-known/* with a small HTML 404 body reading
+  "Invalid .well-known request"; api.frayt.com and sandbox.api.frayt.com (Phoenix)
+  answer a plain-text "Not Found". FRAYT does serve a real /llms.txt at the website
+  root (200) — captured separately at llms/frayt-llms.txt.
+hosts:
+- host: https://api.frayt.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: https://sandbox.api.frayt.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 404}
+- host: https://www.frayt.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /llms.txt, status: 200, file: ../llms/frayt-llms.txt}
+summary:
+  hits: 1
+  well_known_hits: 0
+  security_txt: false
+  agent_card: false

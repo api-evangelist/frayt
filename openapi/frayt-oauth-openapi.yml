@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: FRAYT API — Oauth
+  version: '2.2'
+  description: "<h2>Introduction</h2>\n<p>Welcome to the FRAYT's REST API.  Each endpoint is documented individually, and\
+    \ the endpoints are categorized by the resource that they primarily affect (Matches, and OAuth). By following the outlined\
+    \ schema of each endpoint, our API allows you to integrate FRAYT's logistics services seamlessly into your application.</p>\n\
+    \n<h3>FRAYT Terminology</h3>\n  <p>The logistics industry tends to have a wide variety of terms for a single item. So\
+    \ let's make sure we define our terms before getting into the API:</p>\n    <ul>\n      <li><b>Match:</b> this is an individual\
+    \ order placed in the FRAYT system for a driver to deliver</li>\n      <li><b>Estimate:</b> this provides a dollar amount\
+    \ in the response prior to it becoming a match. Estimates can be authorized into matches by passing the same payload but\
+    \ to the matches endpoint</li>\n    </ul>\n\n<h3>FRAYT Workflows</h3>\n  <p>Now that we have our terms defined, let's\
+    \ paint a bigger picture of what the life of a match looks like. These examples are the most common but are by no means\
+    \ exhaustive.</p>\n    <ul>\n      <li><b>Golden Path:</b> Pending (estimate)->Assigning Driver (live match to whole marketplace)->Accepted\
+    \ (by a driver)->En Route to Pickup->Arrived at Pickup->Picked Up<b><font color=\"red\">*</font></b>->Completed (delivered)->Charged</li>\n\
+    \      <li><b>Unable to Pickup:</b> Pending->Assigning Driver->Accepted>En Route to Pickup->Arrived at Pickup->Unable\
+    \ to Pickup</li>\n      <li><b>Unable to Dropoff:</b> Pending->Assigning Driver->Accepted->En Route to Pickup->Arrived\
+    \ at Pickup->Picked Up<b><font color=\"red\">*</font></b>->En Route to Return->Arrived at Return->Charged</li>\n     \
+    \ <li><b>Preferred Driver:</b> Pending->Offered (only to preferred driver, not marketplace)->Accepted->En Route to Pickup->Arrived\
+    \ at Pickup->Picked Up<b><font color=\"red\">*</font></b>->Completed->Charged</li>\n      <p><i><b><font color=\"red\"\
+    >*</font></b>Once a match is picked up, the match.stop state changes from Pending–>En Route–>Arrived–>Signed–>Delivered\
+    \ or Returned</i></p>\n    </ul>\n\n<h2> Endpoints and Requests</h2>\n<p>The FRAYT API endpoints are organized as <b>matches,\
+    \ match estimates, and oauth</b>. Once authentication has been made, the primary endpoint used will be the Matches endpoint\
+    \ for all estimates and matches.\n\nOur endpoints have a base url of https://api.frayt.com/api/v2.2/\n\nThe <b>schema</b>\
+    \ for each endpoint lists the properties <i>and provides a brief description to provide context for your mapping needs</i>.\
+    \ Additionally, <b>all required properties</b> are listed with a <font color=\"red\">red asterisk</font> (<font color=\"\
+    red\">*</font>).</p>\n\n\n  <h3> Authentication </h3>\n    <p>All FRAYT API requests require a valid bearer token. To\
+    \ generate your bearer token, you will need to hit the <a href=\"/docs/api/v2.2/#/oauth/FraytElixirWeb.API.OauthController.authenticate\"\
+    \ target=\"oauth\">OAuth endpoint</a> passing your Client ID and Secret in the payload.\n    To acquire your Client ID\
+    \ and Secret, reach out to the FRAYT team at <a href=\"mailto:dev@frayt.com\">dev@frayt.com</a>.</p>\n\n  <h3>Match Estimates\
+    \ </h3>\n    <p>The <a href=\"/docs/api/v2.2/#/match%20estimates/FraytElixirWeb.API.V2x2.MatchEstimateController.create\"\
+    \ target=\"match estimates\">match estimates endpoint</a> provides the ability to get a rate estimate, create a match,\
+    \ update an estimate, or turn an estimate into a match.</p>\n    <p>To receive an estimated rate for a delivery without\
+    \ creating the match itself, hit the POST match estimates endpoint.</p>\n    <p>To turn the estimate into a delivery (what\
+    \ we call a match at FRAYT), make a call to ouar PATCH match estimates endpoint.</p>\n\n  <h3>Matches </h3>\n    <p>The\
+    \ <a href=\"/docs/api/v2.2/#/matches/FraytElixirWeb.API.V2x2.MatchController.estimate\" target=\"matches\">matches endpoint</a>\
+    \ provides the ability to create a match, update a match, add a tip, or cancel a match.</p>\n    <p>To tender a delivery\
+    \ (what we call a match at FRAYT), pass the required payload to our POST matches endpoint.</p>\n    <p>To fetch data on\
+    \ a match at any point, hit the GET /matches/{id} endpoint.</p>\n\n\n<h2>Webhooks</h2>\n  <p>Webhook payloads are defined\
+    \ in the callbacks of each method below. You can find detailed state information under the response Schema of each callback.</p>\n\
+    \  <p><i>To receive webhook updates from FRAYT, contact the FRAYT team for setup and configuration at <a href=\"mailto:dev@frayt.com\"\
+    >dev@frayt.com</a></i></p>\n"
+servers:
+- url: https://api.frayt.com
+  variables: {}
+tags:
+- name: oauth
+paths:
+  /api/v2.2/oauth/token:
+    post:
+      callbacks: {}
+      operationId: FraytElixirWeb.API.OauthController.authenticate
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Oauth Request'
+        description: Credentials
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oauth Response'
+          description: Success
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+          description: Invalid Credentials
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invalid Parameters'
+          description: Invalid Parameters
+      summary: Get bearer token for use in protected API calls`
+      tags:
+      - oauth
+components:
+  securitySchemes:
+    authorization:
+      scheme: bearer
+      type: http
+  schemas:
+    Forbidden:
+      description: Invalid/expired credentials were provided or permissions are insufficient
+      example:
+        code: forbidden
+        message: string
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Forbidden
+      type: object
+    Invalid Parameters:
+      description: Error response when invalid paramaters are passed
+      properties:
+        errors:
+          items:
+            properties:
+              detail:
+                type: string
+              source:
+                properties:
+                  pointer:
+                    type: string
+                type: object
+              title:
+                type: string
+            type: object
+          type: array
+      title: Invalid Parameters
+      type: object
+    Oauth Request:
+      description: Company Oauth credentials
+      example:
+        client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      properties:
+        client_id:
+          description: Required client ID
+          type: string
+        client_secret:
+          description: Client secret key (optional if secret is present)
+          type: string
+        secret:
+          description: Secret key (optional if client_secret is present)
+          type: string
+      required:
+      - client_id
+      title: Oauth Request
+      type: object
+    Oauth Response:
+      description: Issued access (bearer) token
+      example:
+        response:
+          token: xxxxxx...
+      properties:
+        response:
+          properties:
+            token:
+              description: Bearer access token
+              type: string
+          required:
+          - token
+          type: object
+      required:
+      - response
+      title: Oauth Response
+      type: object

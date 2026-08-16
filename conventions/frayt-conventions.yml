@@ -1,0 +1,92 @@
+generated: '2026-08-16'
+method: searched
+source: https://api.frayt.com/docs/api/v2.2
+derived_from:
+- openapi/_original/frayt-api-openapi-original.json
+- live response headers from https://api.frayt.com/api/v2.2/
+note: >-
+  Cross-cutting request/response semantics for the FRAYT Client API v2.2, taken from
+  the narrative in the spec's own info.description (which the Swagger UI renders as
+  the docs) and from headers observed on live unauthenticated calls.
+authentication:
+  style: bearer
+  scheme_name: authorization
+  token_endpoint: https://api.frayt.com/api/v2.2/oauth/token
+  grant: client-credentials (custom body — `client_id` + `secret`, NOT RFC 6749 form encoding)
+  header: 'Authorization: Bearer <token>'
+  credential_request: dev@frayt.com (spec) / api@frayt.com / integrations@frayt.com (marketing pages)
+  see: authentication/frayt-authentication.yml
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    FRAYT documents NO idempotency key. There is no Idempotency-Key header or
+    parameter anywhere in the OpenAPI, and no retry-safety guidance in the docs.
+    This matters more than usual here: POST /api/v2.2/matches dispatches a physical
+    driver to a pickup, so a retried or duplicated request is a duplicated delivery
+    with a real cost. The `identifier` and `po` fields on MatchRequest are shipper
+    reference strings, not deduplication keys, and nothing in the spec says FRAYT
+    enforces uniqueness on them. Callers must dedupe on their own side.
+    NO `Idempotency` pointer is wired in apis.yml because the capability is absent.
+pagination:
+  supported: false
+  note: >-
+    The v2.2 public surface exposes no collection/list endpoint — every read is a
+    single Match by id — so there is no pagination contract to document.
+field_expansion:
+  supported: false
+sparse_fieldsets:
+  supported: false
+metadata:
+  supported: partial
+  fields:
+  - {name: identifier, scope: match and stop, description: Shipper's own reference for the order}
+  - {name: po, scope: match, description: Purchase order number}
+  - {name: route_identifier, scope: match, description: Free-text route label}
+  - {name: contract, scope: match, description: Contract key the match bills against}
+request_tracing:
+  supported: true
+  response_header: x-request-id
+  observed: true
+  note: >-
+    Every response carries an `x-request-id` (Phoenix RequestId plug). Capture it and
+    quote it to dev@frayt.com when reporting a failure — it is the only correlation
+    handle the API exposes.
+versioning:
+  scheme: uri-path
+  current: v2.2
+  pattern: https://api.frayt.com/api/v{major}.{minor}/
+  note: >-
+    Minor versions are carried in the path (v2.2), so a minor bump is a breaking URL
+    change for clients. FRAYT publishes no versioning or deprecation policy stating
+    how long a prior path stays live.
+error_envelope:
+  format: custom
+  primary: '{code: string, message: string}'
+  validation: '{errors: [{title, detail, source: {pointer}}]}'
+  rfc9457: false
+  see: errors/frayt-problem-types.yml
+rate_limit_signaling:
+  supported: false
+  headers_observed: []
+  note: >-
+    No X-RateLimit-*, no RateLimit-*, no Retry-After on live responses; no 429
+    documented in the spec. See rate-limits/frayt-rate-limits.yml.
+  see: rate-limits/frayt-rate-limits.yml
+cors:
+  access_control_allow_origin: '*'
+  access_control_allow_credentials: true
+  note: Observed on live responses from api.frayt.com.
+caching:
+  cache_control: 'max-age=0, private, must-revalidate'
+  note: All API responses are marked non-cacheable.
+webhooks:
+  supported: true
+  style: provider-configured (no self-service subscription API)
+  see: asyncapi/frayt-match-webhooks.yml
+data_formats:
+  request: application/json
+  response: application/json
+  identifiers: UUID v4 for match and stop ids
+  timestamps: ISO 8601 UTC (e.g. 2030-02-01T00:30:00Z)
+  money: integer cents (e.g. declared_value 1500 = $15.00)

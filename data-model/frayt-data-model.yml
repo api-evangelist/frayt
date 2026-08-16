@@ -1,0 +1,103 @@
+generated: '2026-08-16'
+method: derived
+source: openapi/_original/frayt-api-openapi-original.json (components.schemas $refs + id-reference fields)
+note: >-
+  The FRAYT domain is a single aggregate root — the Match — with an ordered list of
+  Stops beneath it and Items beneath each Stop. Everything else (Driver, Address,
+  Contact, Accessorial, SLA, Timeframe, StateTransition) hangs off one of those
+  three. Identifiers are UUID v4; money is integer cents; timestamps are ISO 8601 UTC.
+root_entity: Match
+entities:
+- name: Match
+  description: >-
+    One delivery order. Created either directly (POST /matches, already authorized)
+    or by authorizing an Estimate. Carries pricing, the assigned Driver, the ordered
+    Stops, the state machine and its most recent transition.
+  id_field: id
+  id_format: uuid
+  human_reference: shortcode
+  shipper_reference: [identifier, po, route_identifier]
+  state_field: state
+  schema: Match
+  key_fields: [id, state, state_transition, total_price, total_distance, total_weight,
+    total_volume, service_level, vehicle_class, scheduled, pickup_at, dropoff_at, shortcode]
+- name: MatchStop
+  description: >-
+    An ordered destination within a Match. Holds its own state machine, recipient,
+    proof-of-delivery requirements, driver tip and tracking URL.
+  id_field: id
+  id_format: uuid
+  state_field: state
+  schema: MatchStop
+  key_fields: [id, index, route_index, state, destination_address, recipient, items,
+    driver_tip, tracking_url, signature_required, id_verification_required]
+- name: MatchStopItem
+  description: A physical item at a stop, with dimensions, weight, declared value and barcodes.
+  id_field: id
+  id_format: uuid
+  schema: MatchStopItem
+  key_fields: [id, stop_id, description, type, pieces, weight, volume, length, width,
+    height, declared_value, barcode, container_barcode]
+- name: Driver
+  description: The driver assigned to the Match, with live location while en route.
+  id_field: id
+  id_format: uuid
+  schema: Driver
+  key_fields: [id, first_name, last_name, email, phone_number, current_location,
+    vehicle_make, vehicle_model, vehicle_year]
+- name: Address
+  description: A resolved, geocoded address used as an origin or a stop destination.
+  schema: Address
+  key_fields: [address, address2, city, state_code, zip, country_code, lat, lng, neighborhood, name]
+- name: Contact
+  description: A person on the Match — the sender on the Match, or the recipient on a Stop.
+  schema: Contact
+  key_fields: [name, email, phone_number, notify]
+- name: Accessorial
+  description: A priced add-on requirement, e.g. TSA certification for airport access.
+  id_field: id
+  id_format: uuid
+  schema: Accessorial
+  key_fields: [id, key, name, description]
+- name: StateTransition
+  description: >-
+    A record of one state change. Polymorphic by nullability — match_id is set for a
+    match-level transition, stop_id for a stop-level one.
+  schema: StateTransition
+  key_fields: [from, to, notes, match_id, stop_id, updated_at]
+- name: SLA
+  description: A service-level commitment attached to the Match.
+  schema: SLA
+- name: Timeframe
+  description: A pickup or delivery window on the Match or a Stop.
+  schema: [Timeframe, Stop Timeframe]
+- name: BarcodeReading
+  description: A scan event recorded against an item at pickup or delivery.
+  schema: Barcode Reading
+relationships:
+- {from: Match, to: MatchStop, type: has_many, via: stops, ordered_by: index}
+- {from: Match, to: Driver, type: has_one, via: driver, nullable: true}
+- {from: Match, to: Driver, type: has_one, via: preferred_driver, nullable: true}
+- {from: Match, to: Address, type: has_one, via: origin_address}
+- {from: Match, to: Contact, type: has_one, via: sender}
+- {from: Match, to: Accessorial, type: has_many, via: accessorials}
+- {from: Match, to: StateTransition, type: has_one, via: state_transition}
+- {from: Match, to: SLA, type: has_many, via: slas}
+- {from: Match, to: Timeframe, type: has_one, via: timeframe}
+- {from: MatchStop, to: MatchStopItem, type: has_many, via: items}
+- {from: MatchStop, to: Address, type: has_one, via: destination_address}
+- {from: MatchStop, to: Contact, type: has_one, via: recipient}
+- {from: MatchStop, to: StateTransition, type: has_one, via: state_transition}
+- {from: MatchStopItem, to: MatchStop, type: belongs_to, via: stop_id}
+- {from: MatchStopItem, to: BarcodeReading, type: has_many, via: barcode_readings}
+- {from: StateTransition, to: Match, type: belongs_to, via: match_id, nullable: true}
+- {from: StateTransition, to: MatchStop, type: belongs_to, via: stop_id, nullable: true}
+conventions:
+  id_format: UUID v4 on Match, MatchStop, MatchStopItem, Driver, Accessorial
+  id_prefixes: none — FRAYT uses bare UUIDs, not prefixed ids
+  money: integer cents (declared_value, total_price, driver_tip)
+  distance: total_distance in miles
+  weight: pounds
+  volume: cubic inches
+  timestamps: ISO 8601 UTC
+  envelope: 'every response wraps the entity in a top-level `response` key'

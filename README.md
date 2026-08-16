@@ -42,5 +42,14 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-FRAYT is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.nasdaqprivatemarket.com/
+FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand and scheduled
+middle-mile and last-mile delivery marketplace, connecting shippers to a vetted nationwide
+network of owner-operator drivers running everything from cars through cargo vans and box
+trucks. The FRAYT Client API is a versioned REST API (v2.2) over JSON that prices a delivery
+as an "estimate", authorizes it into a "match", tracks it through the driver lifecycle, and
+delivers state changes over webhooks declared inline in the OpenAPI itself.
+
+- Website: https://www.frayt.com/
+- API guide: https://www.frayt.com/frayt-api
+- API reference: https://api.frayt.com/docs/api/v2.2
+- OpenAPI: https://api.frayt.com/api/v2.2/openapi

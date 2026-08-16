@@ -1,0 +1,67 @@
+generated: '2026-08-16'
+method: searched
+source: >-
+  registry.npmjs.org search + package metadata, pypi.org, rubygems.org,
+  packagist.org, hex.pm, api.github.com/orgs/Frayt-Technologies
+note: >-
+  FRAYT publishes NO first-party API client library in any registry. The three
+  @frayt/* packages on npm ARE first-party — the npm scope is owned by FRAYT and
+  each package's repository field points at github.com/Frayt-Technologies — but
+  they are a maintained FORK of the Eva Design System "UI Kitten" React Native
+  component library used to build FRAYT's own mobile apps. They do not wrap the
+  FRAYT Client API, expose no Match/Estimate/OAuth surface, and must NOT be counted
+  as SDKs. No `type: SDKs` pointer is wired for this provider as a result.
+  github.com/Frayt-Technologies exists and is verifiably FRAYT (name "FRAYT", blog
+  www.frayt.com, location Cincinnati, OH, created 2020-04-16) but publishes 0 public
+  repositories, so the fork source itself is not readable. Integration is expected
+  to be hand-rolled against the OpenAPI at https://api.frayt.com/api/v2.2/openapi.
+sdk_count: 0
+package_count: 3
+packages:
+- language: javascript
+  registry: npm
+  name: '@frayt/components'
+  url: https://www.npmjs.com/package/@frayt/components
+  install: npm install @frayt/components
+  official: true
+  api_client: false
+  version: 5.4.6
+  published: '2026-06-09'
+  license: MIT
+  repository: https://github.com/Frayt-Technologies/react-native-ui-kitten
+  note: >-
+    First-party fork of akveo/react-native-ui-kitten. React Native UI components for
+    FRAYT's mobile apps — not a FRAYT API client.
+- language: javascript
+  registry: npm
+  name: '@frayt/eva-icons'
+  url: https://www.npmjs.com/package/@frayt/eva-icons
+  install: npm install @frayt/eva-icons
+  official: true
+  api_client: false
+  version: 5.4.6
+  published: '2026-06-09'
+  license: MIT
+  repository: https://github.com/Frayt-Technologies/react-native-ui-kitten
+  note: Eva Icons for React Native, forked into the FRAYT npm scope. Not an API client.
+- language: javascript
+  registry: npm
+  name: '@frayt/metro-config'
+  url: https://www.npmjs.com/package/@frayt/metro-config
+  install: npm install @frayt/metro-config
+  official: true
+  api_client: false
+  version: 5.4.6
+  published: '2026-06-09'
+  license: MIT
+  repository: https://github.com/Frayt-Technologies/react-native-ui-kitten
+  note: Metro bundler config for the forked UI Kitten build. Not an API client.
+registries_checked:
+- {registry: npm, result: '3 first-party packages, none an API client'}
+- {registry: pypi, package: frayt, status: 404}
+- {registry: rubygems, package: frayt, status: 404}
+- {registry: packagist, result: no FRAYT package}
+- {registry: hex, result: 'no FRAYT package (notable — the API is a Phoenix/Elixir app)'}
+- {registry: crates.io, result: no FRAYT package}
+- {registry: nuget, result: no FRAYT package}
+- {registry: pkg.go.dev, result: no FRAYT module}

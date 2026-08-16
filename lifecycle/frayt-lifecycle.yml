@@ -1,0 +1,55 @@
+generated: '2026-08-16'
+method: searched
+source: https://api.frayt.com/docs/api/v2.2, https://www.frayt.com/frayt-api
+note: >-
+  FRAYT versions its API in the URL path at MINOR granularity (v2.2), which is
+  unusual and consequential: a move to v2.3 changes every client URL. Despite that,
+  FRAYT publishes no versioning policy, no deprecation policy, no changelog, no SLA
+  document and no status page. Nothing in the OpenAPI is marked `deprecated: true`.
+  The only lifecycle guarantee a shipper has is the contact address in the docs.
+versioning:
+  scheme: uri-path
+  current: v2.2
+  pattern: https://api.frayt.com/api/v{major}.{minor}/
+  granularity: minor
+  policy_url: null
+  note: >-
+    Prior versions (v2.1 and earlier) are not documented as available or retired;
+    only v2.2 has a published Swagger UI at /docs/api/v2.2.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No RFC 8594 Sunset/Deprecation header support is documented or observed, and no
+    deprecation policy page exists. NO `Deprecation` pointer is wired in apis.yml.
+deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No API SLA is published. FRAYT's marketing pages make OPERATIONAL commitments —
+    under one hour to pickup on demand, 24/7 US-based support, a ~99% driver-match
+    rate — but these are delivery-service promises, not API availability terms.
+status_page: null
+status_page_note: >-
+  No status page. status.frayt.com does not resolve (NXDOMAIN);
+  https://www.frayt.com/status returns 404. NO `StatusPage` pointer is wired.
+changelog: null
+changelog_note: >-
+  No dated API changelog was found on the docs host, the website, or via search. No
+  ChangeLog pointer is wired and no changelog/ artifact was written.
+support:
+  developer_contact: dev@frayt.com
+  api_access_contact: api@frayt.com
+  integrations_contact: integrations@frayt.com
+  general: https://www.frayt.com/contact
+  faq: https://www.frayt.com/platform/faqs
+  hours: 24/7 US-based operations support (marketing claim, delivery operations)
+environments:
+- {name: production, base_url: 'https://api.frayt.com/api/v2.2/', docs: 'https://api.frayt.com/docs/api/v2.2'}
+- {name: sandbox, base_url: 'https://sandbox.api.frayt.com/api/v2.2/', docs: 'https://sandbox.api.frayt.com/docs/api/v2.2'}
+evidence:
+- {url: 'https://status.frayt.com/', status: 0, result: NXDOMAIN}
+- {url: 'https://www.frayt.com/status', status: 404}
+- {url: 'https://api.frayt.com/docs/api/v2.2', status: 200, result: 'Swagger UI; no changelog, deprecation or SLA section'}

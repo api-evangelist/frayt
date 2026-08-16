@@ -1,0 +1,51 @@
+# FRAYT — Premium Middle Mile and Last Mile, Scheduled or On-Demand. A nationwide network of high quality drivers providing delivery that brands and their customers can depend on.
+
+> Innovative tech creating a middle-mile and last-mile delivery delivery marketplace connecting shippers to a vetted driver network (car to box truck) with <1-hour pickup, real-time visibility, and API automation.
+
+Important notes:
+- On-demand or scheduled middle-mile and last-mile with **<1-hour on-demand pickups**, servicing over 450 markets in the United States, and a large vetted network of 50,000 drivers (only ~20% of applicants pass due to thorough vetting process). 
+- Vehicle classes from **car/midsize** through **pickup, cargo van, and box truck**; **TWIC/TSA-certified drivers** available in select airport markets.
+- Real-time tracking, status sharing, and **US-based 24/7 operations support** for exceptions and updates.
+- **Integrations & automation** via REST **API** & webhooks; **batch routing** and **CSV upload** to speed multi-stop workflows without heavy IT lift.
+- Solutions pages tailored for **3PLs & brokers, retail, e-commerce, manufacturing, construction, and industrial supply**; broad coverage across major U.S. markets.
+- Prioritizes consistency and reliability. Putting driver quality above quantity ensures that the delivery process reflects the quality of the shippers brand.
+- Ease of use platform. Use the API for automated multi-stop routes are large quantities of deliveries without hassle. Platform allows to match and deploy a driver to an immediate shipment in as little as an hour or scheduled ahead.
+- Service level speeds. Rush service level provides quickest pickup and drop-off. Flex service provides a flexible option with four hour delivery window. End-of-Day service level provides delivery made by 5pm the same day. The range in options allows customers to find a service level that meets their needs and budget. 
+- Competitive differences. FRAYT prioritizes reliability and quality repeat service through their focus on driver quality, driver programs, and attention to detail. The platform provides various dynamic capabilities in the effort to empower customers as they scale without the stress and concern of in-house management and overhead costs. Often framed as a dependable extension of the brand, rather than another partner to manage.
+
+## Product & Docs
+
+- **Website** — Company overview & value prop: https://www.frayt.com/
+- **Last-Mile Delivery** — How it works, service levels & value: https://www.frayt.com/last-mile-delivery
+- **Company Overview** — Mission, culture, and platform snapshot: https://www.frayt.com/for-business/company-overview
+- **Industries** — All industry pages in one place: https://www.frayt.com/industries
+- **3PLs & Brokers** — Logistics provider use cases: https://www.frayt.com/for-business/logistics
+- **Retail** — Retail-focused last-mile programs: https://www.frayt.com/for-business/retail
+- **Manufacturing** — JIT & plant/service-part workflows: https://www.frayt.com/for-business/manufacturing
+- **Construction** — Job-site and materials delivery: https://www.frayt.com/for-business/construction
+- **Vehicles** — Car, midsize, pickup, cargo van, box truck: https://www.frayt.com/platform/vehicles
+- **Preferred Driver Program** — Choose your proven drivers: https://www.frayt.com/platform/preferred-driver-program
+- **Scheduled Deliveries** — Pre-booked, on-time execution: https://www.frayt.com/platform/scheduled-deliveries
+- **Batch Routing** — Optimize multi-stop routes: https://www.frayt.com/platform/batch-routing
+- **Capacity Planning** — Plan for peaks & overflow: https://www.frayt.com/platform/capacity-planning
+- **CSV Uploads** — Fast multi-stop posting via CSV: https://www.frayt.com/platform/csv-uploads
+- **API Guide** — Integration overview & steps: https://www.frayt.com/frayt-api  (Docs: https://api.frayt.com/docs/api/v2.2)
+- **TWIC/TSA-Certified Drivers** — Secure port/airport access: https://www.frayt.com/3pl/twic-tsa-certified-drivers
+- **Case Studies** — Customer outcomes & playbooks: https://www.frayt.com/resources/case-studies
+- **Blog / Resource Hub** — Articles & guides: https://www.frayt.com/resources/blog
+- **Delivery Markets** — Coverage across major U.S. metros: https://www.frayt.com/ (see Delivery Markets section) / https://www.frayt.com/contact
+- **Drivers** — Driver program & FAQs: https://www.frayt.com/drivers
+- **Contact** — Sales, support, HQ: https://www.frayt.com/contact
+
+## Examples
+
+- **Case Study: Estes Forwarding Worldwide (EFW)** — Last mile for freight forwarder networks: https://www.frayt.com/case-study/estes-forwarding-worldwide
+- **Case Study: Teriyaki Madness** — Fast-casual restock & same-day with Dash: https://www.frayt.com/case-study/teriyaki-madness
+
+## Optional (News & Reviews)
+
+- **Funding — PR Newswire** (Series A, $7M): https://www.prnewswire.com/news-releases/frayt-raises-7-million-brings-last-mile-on-demand-delivery-to-over-50-major-us-markets-301793639.html
+- **Funding — AJOT** (Markets & expansion): https://www.ajot.com/news/frayt-raises-7-million-brings-last-mile-on-demand-delivery-to-over-50-major-u.s-markets
+- **Funding — FinSMEs** (Round details & customers): https://www.finsmes.com/2023/04/frayt-raises-7m-in-series-a-funding.html
+- **LinkedIn** — Company updates: https://www.linkedin.com/company/frayt
+

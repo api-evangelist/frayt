@@ -1,0 +1,35 @@
+generated: '2026-08-16'
+method: probed
+source: https://api.frayt.com/docs/api/v2.2 + live unauthenticated responses from https://api.frayt.com/api/v2.2/
+limit_count: 0
+note: >-
+  FRAYT publishes no rate limits and emits no rate-limit signal. This was checked
+  three ways and all three are negative: (1) the docs — the Swagger UI at
+  /docs/api/v2.2 and its full info.description narrative contain no limits, quota or
+  throttling section; (2) the OpenAPI — no operation declares a 429 response, and the
+  strings "429", "RateLimit", "Retry-After", "throttle" and "quota" do not appear
+  anywhere in the 106KB spec; (3) live responses — two unauthenticated calls
+  (POST /api/v2.2/oauth/token -> 403, GET /api/v2.2/matches/{id} -> 401) returned no
+  X-RateLimit-*, no RateLimit-* and no Retry-After header. An agent integrating FRAYT
+  therefore has NO runtime backoff signal and must implement its own conservative
+  retry policy. This is compounded by the absence of any idempotency key
+  (see conventions/frayt-conventions.yml) — a blind retry of POST /matches can
+  dispatch a second driver to a real pickup.
+limits: []
+response_headers:
+  rate_limit_headers: []
+  observed_headers:
+  - {name: x-request-id, purpose: 'request correlation (Phoenix RequestId plug)'}
+  - {name: strict-transport-security, value: max-age=31536000}
+  - {name: cache-control, value: 'max-age=0, private, must-revalidate'}
+  - {name: access-control-allow-origin, value: '*'}
+  - {name: access-control-allow-credentials, value: 'true'}
+exhaustion:
+  status_code: null
+  retry_after: false
+  documented: false
+evidence:
+- {url: 'https://api.frayt.com/api/v2.2/oauth/token', method: POST, status: 403, rate_limit_headers: none}
+- {url: 'https://api.frayt.com/api/v2.2/matches/00000000-0000-0000-0000-000000000000', method: GET, status: 401, rate_limit_headers: none}
+- {url: 'https://api.frayt.com/api/v2.2/openapi', status: 200, result: 'no 429 response and no rate-limit schema in any of the 8 operations'}
+- {url: 'https://api.frayt.com/docs/api/v2.2', status: 200, result: no limits section in the rendered documentation}
