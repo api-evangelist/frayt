@@ -13,7 +13,7 @@ url: https://raw.githubusercontent.com/api-evangelist/frayt/refs/heads/main/apis
 image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-16'
 modified: '2026-08-16'
 tags:
