@@ -20,6 +20,19 @@ tags:
 - Company
 - Last Mile Delivery
 - Logistics
+- Couriers
+- On-Demand Delivery
+- Shipping
+- Freight
+- Supply Chain
+- Transportation
+- Third Party Logistics
+- Delivery Tracking
+- Webhook
+tags_raw:
+- Company
+- Last Mile Delivery
+- Logistics
 - Courier
 - On Demand Delivery
 - Shipping
@@ -40,6 +53,16 @@ apis:
   humanURL: https://www.frayt.com/frayt-api
   baseURL: https://api.frayt.com/api/v2.2/
   tags:
+  - Last Mile Delivery
+  - Logistics
+  - Couriers
+  - Delivery
+  - Shipping
+  - Freight
+  - Routing
+  - Webhook
+  - Authentication
+  tags_raw:
   - Last Mile Delivery
   - Logistics
   - Courier
