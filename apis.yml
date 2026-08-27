@@ -43,36 +43,16 @@ tags_raw:
 - Delivery Tracking
 - Webhooks
 apis:
-- name: FRAYT Client API
-  description: 'REST API (v2.2) for FRAYT''s on-demand and scheduled delivery marketplace.
-    Price a delivery with the match-estimate endpoints, authorize an estimate into
-    a Match, retrieve and update a Match, update a stop to add a driver tip, and cancel
-    a Match. OAuth 2.0 client-credentials issues the bearer token every other call
-    requires. Webhook callbacks (match_update) are declared inline in the OpenAPI so
-    subscribers receive the full Match payload on every state transition.'
+- aid: frayt:frayt-match-estimates-api
+  name: FRAYT match estimates API
+  description: The match estimates API from FRAYT — 2 operation(s) for match estimates.
   humanURL: https://www.frayt.com/frayt-api
   baseURL: https://api.frayt.com/api/v2.2/
   tags:
-  - Last Mile Delivery
-  - Logistics
-  - Couriers
-  - Delivery
-  - Shipping
-  - Freight
-  - Routing
-  - Webhook
-  - Authentication
-  tags_raw:
-  - Last Mile Delivery
-  - Logistics
-  - Courier
-  - Delivery
-  - Shipping
-  - Freight
-  - Routing
-  - Webhooks
-  - OAuth2
+  - match estimates
   properties:
+  - type: OpenAPI
+    url: openapi/frayt-match-estimates-api-openapi.yml
   - type: Documentation
     url: https://api.frayt.com/docs/api/v2.2
   - type: APIReference
@@ -81,12 +61,6 @@ apis:
     url: https://www.frayt.com/frayt-api
   - type: DeveloperPortal
     url: https://www.frayt.com/3pl/api
-  - type: OpenAPI
-    url: openapi/frayt-matches-openapi.yml
-  - type: OpenAPI
-    url: openapi/frayt-match-estimates-openapi.yml
-  - type: OpenAPI
-    url: openapi/frayt-oauth-openapi.yml
   - type: Authentication
     url: authentication/frayt-authentication.yml
   - type: Conventions
@@ -97,8 +71,66 @@ apis:
     url: data-model/frayt-data-model.yml
   - type: Webhooks
     url: asyncapi/frayt-match-webhooks.yml
-  - type: Overlay
-    url: overlays/frayt-matches-overlay.yaml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
+- aid: frayt:frayt-matches-api
+  name: FRAYT Matches API
+  description: The matches API from FRAYT — 3 operation(s) for matches.
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - matches
+  properties:
+  - type: OpenAPI
+    url: openapi/frayt-matches-api-openapi.yml
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
+- aid: frayt:frayt-oauth-api
+  name: FRAYT OAUTH API
+  description: The oauth API from FRAYT — 1 operation(s) for oauth.
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - oauth
+  properties:
+  - type: OpenAPI
+    url: openapi/frayt-oauth-api-openapi.yml
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
   - type: Sandbox
     url: sandbox/frayt-sandbox.yml
 maintainers:
@@ -107,6 +139,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/frayt-matches-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/frayt-agentic-access.yml
 - type: DomainSecurity
