@@ -32,8 +32,8 @@ tags:
 - Company
 - Last Mile Delivery
 - Logistics
-- Couriers
-- On-Demand Delivery
+- Courier
+- On Demand Delivery
 - Shipping
 - Freight
 - Supply Chain
@@ -91,6 +91,8 @@ apis:
   humanURL: https://www.frayt.com/frayt-api
   baseURL: https://api.frayt.com/api/v2.2/
   tags:
+  - Matches
+  tags_raw:
   - matches
   properties:
   - type: OpenAPI
@@ -121,6 +123,8 @@ apis:
   humanURL: https://www.frayt.com/frayt-api
   baseURL: https://api.frayt.com/api/v2.2/
   tags:
+  - Authentication
+  tags_raw:
   - oauth
   properties:
   - type: OpenAPI
