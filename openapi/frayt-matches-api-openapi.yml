@@ -1,0 +1,3281 @@
+openapi: 3.2.0
+info:
+  title: FRAYT Matches API
+  version: '2.2'
+  description: "<h2>Introduction</h2>\n<p>Welcome to the FRAYT's REST API.  Each endpoint is documented individually, and the endpoints are categorized by the resource that they primarily affect (Matches, and OAuth). By following the outlined schema of each endpoint, our API allows you to integrate FRAYT's logistics services seamlessly into your application.</p>\n\n<h3>FRAYT Terminology</h3>\n  <p>The logistics industry tends to have a wide variety of terms for a single item. So let's make sure we define our terms before getting into the API:</p>\n    <ul>\n      <li><b>Match:</b> this is an individual order placed in the FRAYT system for a driver to deliver</li>\n      <li><b>Estimate:</b> this provides a dollar amount in the response prior to it becoming a match. Estimates can be authorized into matches by passing the same payload but to the matches endpoint</li>\n    </ul>\n\n<h3>FRAYT Workflows</h3>\n  <p>Now that we have our terms defined, let's paint a bigger picture of what the life of a match looks like. These examples are the most common but are by no means exhaustive.</p>\n    <ul>\n      <li><b>Golden Path:</b> Pending (estimate)->Assigning Driver (live match to whole marketplace)->Accepted (by a driver)->En Route to Pickup->Arrived at Pickup->Picked Up<b><font color=\"red\">*</font></b>->Completed (delivered)->Charged</li>\n      <li><b>Unable to Pickup:</b> Pending->Assigning Driver->Accepted>En Route to Pickup->Arrived at Pickup->Unable to Pickup</li>\n      <li><b>Unable to Dropoff:</b> Pending->Assigning Driver->Accepted->En Route to Pickup->Arrived at Pickup->Picked Up<b><font color=\"red\">*</font></b>->En Route to Return->Arrived at Return->Charged</li>\n      <li><b>Preferred Driver:</b> Pending->Offered (only to preferred driver, not marketplace)->Accepted->En Route to Pickup->Arrived at Pickup->Picked Up<b><font color=\"red\">*</font></b>->Completed->Charged</li>\n      <p><i><b><font color=\"red\">*</font></b>Once a match is picked up, the match.stop state changes from Pending–>En Route–>Arrived–>Signed–>Delivered or Returned</i></p>\n    </ul>\n\n<h2> Endpoints and Requests</h2>\n<p>The FRAYT API endpoints are organized as <b>matches, match estimates, and oauth</b>. Once authentication has been made, the primary endpoint used will be the Matches endpoint for all estimates and matches.\n\nOur endpoints have a base url of https://api.frayt.com/api/v2.2/\n\nThe <b>schema</b> for each endpoint lists the properties <i>and provides a brief description to provide context for your mapping needs</i>. Additionally, <b>all required properties</b> are listed with a <font color=\"red\">red asterisk</font> (<font color=\"red\">*</font>).</p>\n\n\n  <h3> Authentication </h3>\n    <p>All FRAYT API requests require a valid bearer token. To generate your bearer token, you will need to hit the <a href=\"/docs/api/v2.2/#/oauth/FraytElixirWeb.API.OauthController.authenticate\" target=\"oauth\">OAuth endpoint</a> passing your Client ID and Secret in the payload.\n    To acquire your Client ID and Secret, reach out to the FRAYT team at <a href=\"mailto:dev@frayt.com\">dev@frayt.com</a>.</p>\n\n  <h3>Match Estimates </h3>\n    <p>The <a href=\"/docs/api/v2.2/#/match%20estimates/FraytElixirWeb.API.V2x2.MatchEstimateController.create\" target=\"match estimates\">match estimates endpoint</a> provides the ability to get a rate estimate, create a match, update an estimate, or turn an estimate into a match.</p>\n    <p>To receive an estimated rate for a delivery without creating the match itself, hit the POST match estimates endpoint.</p>\n    <p>To turn the estimate into a delivery (what we call a match at FRAYT), make a call to ouar PATCH match estimates endpoint.</p>\n\n  <h3>Matches </h3>\n    <p>The <a href=\"/docs/api/v2.2/#/matches/FraytElixirWeb.API.V2x2.MatchController.estimate\" target=\"matches\">matches endpoint</a> provides the ability to create a match, update a match, add a tip, or cancel a match.</p>\n    <p>To tender a delivery (what we call a match at FRAYT), pass the required payload to our POST matches endpoint.</p>\n    <p>To fetch data on a match at any point, hit the GET /matches/{id} endpoint.</p>\n\n\n<h2>Webhooks</h2>\n  <p>Webhook payloads are defined in the callbacks of each method below. You can find detailed state information under the response Schema of each callback.</p>\n  <p><i>To receive webhook updates from FRAYT, contact the FRAYT team for setup and configuration at <a href=\"mailto:dev@frayt.com\">dev@frayt.com</a></i></p>\n"
+servers:
+- url: https://api.frayt.com
+  variables: {}
+tags:
+- name: matches
+paths:
+  /api/v2.2/matches:
+    post:
+      callbacks:
+        match_update:
+          match.shipper.location.company.webhook_url:
+            post:
+              callbacks: {}
+              deprecated: false
+              description: Every time the Match state transitions, a child stop state transitions, or the driver's location is updated when en route an update will be sent to your configured company webhook. Updates are only sent out if webhooks are configured.
+              parameters: []
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MatchResponse'
+                description: Match
+                required: false
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+              summary: Send back Match transitions
+              tags: []
+      operationId: FraytElixirWeb.API.V2x2.MatchController.create
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchRequest'
+        description: Match params
+        required: false
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+          description: Match response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          description: No Credentials
+        '422':
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Unprocessible_Entity'
+                - $ref: '#/components/schemas/Invalid_Parameters'
+                type: object
+          description: Invalid parameters
+      security:
+      - authorization: []
+      summary: Create an authorized match
+      tags:
+      - matches
+  /api/v2.2/matches/{id}:
+    delete:
+      callbacks:
+        match_update:
+          match.shipper.location.company.webhook_url:
+            post:
+              callbacks: {}
+              deprecated: false
+              description: Every time the Match state transitions, a child stop state transitions, or the driver's location is updated when en route an update will be sent to your configured company webhook. Updates are only sent out if webhooks are configured.
+              parameters: []
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MatchResponse'
+                description: Match
+                required: false
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+              summary: Send back Match transitions
+              tags: []
+      operationId: FraytElixirWeb.API.V2x2.MatchController.delete
+      parameters:
+      - description: Match ID
+        example: 44e216c1-3ebc-4ce0-9a6b-1b94d9c2f25b
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelMatchRequest'
+        description: Cancel params
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+          description: Match response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bad_Request'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          description: No Credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Not_Found'
+          description: Not Found
+      security:
+      - authorization: []
+      summary: Cancel Match
+      tags:
+      - matches
+    get:
+      callbacks: {}
+      operationId: FraytElixirWeb.API.V2x2.MatchController.show
+      parameters:
+      - description: Match ID
+        example: 44e216c1-3ebc-4ce0-9a6b-1b94d9c2f25b
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+          description: Match response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          description: No Credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Not_Found'
+          description: Not Found
+      security:
+      - authorization: []
+      summary: Get Match
+      tags:
+      - matches
+    patch:
+      callbacks:
+        match_update:
+          match.shipper.location.company.webhook_url:
+            post:
+              callbacks: {}
+              deprecated: false
+              description: Every time the Match state transitions, a child stop state transitions, or the driver's location is updated when en route an update will be sent to your configured company webhook. Updates are only sent out if webhooks are configured.
+              parameters: []
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/MatchResponse'
+                description: Match
+                required: false
+              responses:
+                '200':
+                  description: Your server returns this code if it accepts the callback
+              summary: Send back Match transitions
+              tags: []
+      operationId: FraytElixirWeb.API.V2x2.MatchController.update
+      parameters:
+      - description: Match ID
+        example: 44e216c1-3ebc-4ce0-9a6b-1b94d9c2f25b
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestrictedUpdateMatchRequest'
+        description: Update an existing match that has not been picked up yet
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchResponse'
+          description: Match response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bad_Request'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          description: No Credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Not_Found'
+          description: Not Found
+      security:
+      - authorization: []
+      summary: Update Match
+      tags:
+      - matches
+  /api/v2.2/matches/{match_id}/stops/{stop_id}:
+    patch:
+      callbacks: {}
+      operationId: FraytElixirWeb.API.V2x2.MatchStopController.update
+      parameters:
+      - description: Match ID
+        example: 44e216c1-3ebc-4ce0-9a6b-1b94d9c2f25b
+        in: path
+        name: match_id
+        required: true
+        schema:
+          type: string
+      - description: Stop ID
+        example: 44e216c1-3ebc-4ce0-9a6b-1b94d9c2f25b
+        in: path
+        name: stop_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDriverTip'
+        description: Update the driver's tip at a specific stop
+        required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchStopResponse'
+          description: Stop response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          description: No Credentials
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forbidden'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Not_Found'
+          description: Not Found
+        '422':
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Unprocessible_Entity'
+                - $ref: '#/components/schemas/Invalid_Parameters'
+                type: object
+          description: Invalid parameters
+      security:
+      - authorization: []
+      summary: Update Driver Tip
+      tags:
+      - matches
+components:
+  schemas:
+    Timeframe:
+      description: Timeframe for a stop
+      example:
+        earliest_arrival: '2022-10-01 11:45:10'
+        end_time: '2022-10-01 11:45:10'
+        latest_arrival: '2022-10-01 11:45:10'
+        latest_completion: '2022-10-01 12:00:10'
+        start_time: '2022-10-01 11:45:10'
+        updated_at: '2022-10-01 11:45:10'
+      properties:
+        earliest_arrival:
+          description: Earliest expected arrival time at the stop
+          format: date-time
+          type: string
+        end_time:
+          deprecated: true
+          description: 'Deprecated: use latest_arrival instead'
+          format: date-time
+          type: string
+        latest_arrival:
+          description: Latest expected arrival time at the stop
+          format: date-time
+          type: string
+        latest_completion:
+          description: Latest expected completion time at the stop (latest_arrival + handling)
+          format: date-time
+          type: string
+        start_time:
+          deprecated: true
+          description: 'Deprecated: use earliest_arrival instead'
+          format: date-time
+          type: string
+        updated_at:
+          description: Timestamp of the last update to the timeframe
+          format: date-time
+          type: string
+      title: Timeframe
+      type: object
+    Bad_Request:
+      description: There is an issue with you request
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Bad Request
+      type: object
+    Invalid_Parameters:
+      description: Error response when invalid paramaters are passed
+      properties:
+        errors:
+          items:
+            properties:
+              detail:
+                type: string
+              source:
+                properties:
+                  pointer:
+                    type: string
+                type: object
+              title:
+                type: string
+            type: object
+          type: array
+      title: Invalid Parameters
+      type: object
+    Update_MatchStop:
+      description: Body for updating a Match Stop.
+      example:
+        cargo_location_required: false
+        delivery_notes: Leave by the door
+        destination_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+        destination_photo_required: false
+        dropoff_by: '2030-01-01T01:01:00Z'
+        has_load_fee: true
+        id: c22206a8-00f5-4fde-8395-c24441263f1b
+        id_verification_required: true
+        id_verified_at: '2025-01-01T00:00:00Z'
+        identifier: '1234567890'
+        items:
+        - barcode: 123barcode456
+          barcode_delivery_required: true
+          barcode_pickup_required: false
+          container_barcode: 123container456
+          declared_value: 1500
+          description: A Tire
+          height: 30.0
+          id: c22206a8-00f5-4fde-8395-c24441263f1b
+          length: 30.0
+          pieces: 4
+          stop_id: '123'
+          type: item
+          volume: 5400
+          weight: 25.0
+          width: 6.0
+        minimum_age: 42
+        needs_pallet_jack: false
+        po: PO or Job Number for this Match Stop
+        recipient:
+          email: john@smith.com
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        self_recipient: false
+        signature_required: false
+        tip_price: 1000
+      properties:
+        cargo_location_required:
+          description: Whether a cargo location is required for this stop
+          type: boolean
+        delivery_notes:
+          description: Notes for the driver regarding delivery
+          type:
+          - string
+          - 'null'
+        destination_address:
+          description: The dropoff point for this Stop
+          oneOf:
+          - type: string
+          - $ref: '#/components/schemas/AddressRequest'
+          type: object
+        destination_photo_required:
+          description: Whether a POD photo is required
+          type: boolean
+        dropoff_by:
+          description: The latest the driver should arrive at this Stop
+          format: date-time
+          type:
+          - string
+          - 'null'
+        has_load_fee:
+          default: true
+          description: Set to `true` if the driver will be required to unload the items
+          type: boolean
+        id:
+          description: Unique identifier for Match Stop. Ensure this is present to update an existing stop instead of replacing it.
+          type: string
+        id_verification_required:
+          default: false
+          description: Whether ID verification is required
+          type: boolean
+        id_verified_at:
+          description: Time the recipient's ID was verified
+          format: date-time
+          type:
+          - string
+          - 'null'
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        items:
+          description: Items to be delivered at this Stop
+          items:
+            $ref: '#/components/schemas/UpdateMatchStopItem'
+          minItems: 1
+          type: array
+        minimum_age:
+          description: Minimum age required for delivery
+          type:
+          - integer
+          - 'null'
+        needs_pallet_jack:
+          default: false
+          description: Set to `true` if the driver will be required to unload pallets from a box truck with a pallet jack
+          type: boolean
+        po:
+          description: PO or Job Number for this Match Stop
+          type:
+          - string
+          - 'null'
+        recipient:
+          description: Contact for this stop's recipient
+          example:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        self_recipient:
+          default: true
+          description: When set to `true`, `recipient_name`, `recipient_phone`, and `recipient_email` will be ignored
+          type: boolean
+        signature_instructions:
+          description: Required for photo signatures. Instructions for the driver to sign
+          type:
+          - string
+          - 'null'
+        signature_required:
+          description: When set to `true`, Drivers will require requesting the customer's signature at delivery time.
+          type:
+          - boolean
+          - 'null'
+        signature_type:
+          default: electronic
+          description: Type of signature required
+          enum:
+          - photo
+          - electronic
+          - electronic_bill_of_lading
+          type:
+          - string
+          - 'null'
+        tip_price:
+          default: 0
+          description: Additional tip for the driver in US cents (¢)
+          type: integer
+      title: Update MatchStop
+      type: object
+    Match:
+      description: A Match
+      example:
+        accepted_at: null
+        accessorials:
+        - description: Driver must be certified by the TSA for this Match
+          id: 1e261ee8-71b3-480a-908d-168941ccea05
+          key: tsa
+          name: TSA Certification
+        activated_at: null
+        arrived_at: null
+        bill_of_lading_photo: null
+        bill_of_lading_required: false
+        cancel_code: null
+        cancel_reason: null
+        canceled_at: null
+        completed_at: null
+        contract:
+          allowed_cancellation_states:
+          - inactive
+          - scheduled
+          - assigning_driver
+          company_id: null
+          contract_key: frayt_dash
+          id: 346519d2-db50-44ca-b2f7-d50771efc03f
+          name: Dash
+        coupon: null
+        defaults:
+          match_stop_items:
+            barcode_delivery_required: false
+            barcode_pickup_required: false
+            type: item
+          match_stops:
+            cargo_location_required: false
+            destination_photo_required: true
+            has_load_fee: true
+            id_verification_required: false
+            needs_pallet_jack: false
+            self_recipient: true
+            signature_required: true
+            signature_type: electronic
+          match_stops.recipient:
+            notify: false
+          matches:
+            origin_photo_required: false
+            parking_spot_required: false
+          matches.sender:
+            notify: false
+        driver: null
+        dropoff_at: '2030-02-01T00:30:00Z'
+        eta: null
+        fees:
+        - amount: 14000
+          description: TSA Service Fee
+          id: 1e261ee8-71b3-480a-908d-168941ccea05
+          name: TSA Certification
+          original_amount: 0
+          type: tsa_wait_fee
+        - amount: 4894
+          description: null
+          id: 1e261ee8-71b3-480a-908d-168941ccea05
+          name: Base Fee
+          original_amount: 0
+          type: base_fee
+        - amount: 1000
+          description: null
+          id: 1e261ee8-71b3-480a-908d-168941ccea05
+          name: Driver Tip
+          original_amount: 0
+          type: driver_tip
+        id: 0000c119-fca6-4531-8b7f-716efb54ef26
+        identifier: '1234567890'
+        inserted_at: '2030-01-01T00:19:50Z'
+        label:
+          format: qr_code
+          value: 1Z2Y3X4W5V6U7
+        optimized_stops: false
+        origin_address:
+          address: 708 Walnut Street
+          address2: '500'
+          city: Cincinnati
+          country: United States
+          country_code: US
+          formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+          lat: 39.1043198
+          lng: -84.5118912
+          name: null
+          neighborhood: Central Business District
+          state: Ohio
+          state_code: OH
+          type: address
+          zip: '45202'
+        origin_photo: null
+        origin_photo_required: false
+        origin_photos: []
+        picked_up_at: null
+        pickup_at: '2030-02-01T00:00:00Z'
+        pickup_notes: Go to the back
+        platform: marketplace
+        po: ABCDEFG
+        preferred_driver: null
+        price_discount: 0.0
+        rating: null
+        rating_reason: null
+        required_fields: {}
+        route_id: 0000c119-fca6-4531-8b7f-716efb54ef26
+        route_identifier: Huntsville - North East, AL
+        route_index: 0
+        schedule_id: null
+        scheduled: true
+        self_sender: false
+        sender:
+          email: john@smith.com
+          id: 23e534a0-b239-41d9-aa00-3adb40197388
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        service_level: 1
+        shortcode: ABCDEFGH
+        signature_photo: null
+        slas:
+        - completed_at: null
+          end_time: '2030-02-01T00:30:00Z'
+          start_time: '2030-02-01T00:00:00Z'
+          type: pickup
+        - completed_at: null
+          end_time: '2030-02-01T01:30:00Z'
+          start_time: '2030-02-01T00:00:00Z'
+          type: delivery
+        state: scheduled
+        state_transition:
+          from: pending
+          match_id: 123e4567-e89b-12d3-a456-426614174000
+          notes: null
+          stop_id: null
+          to: scheduled
+          updated_at: '2030-01-01 09:30:00'
+        stops:
+        - arrived_at: null
+          cargo_location: null
+          cargo_location_required: false
+          delivered_at: null
+          delivery_notes: Leave by the door
+          destination_address:
+            address: 708 Walnut Street
+            address2: '500'
+            city: Cincinnati
+            country: United States
+            country_code: US
+            formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+            lat: 39.1043198
+            lng: -84.5118912
+            name: null
+            neighborhood: Central Business District
+            state: Ohio
+            state_code: OH
+            type: address
+            zip: '45202'
+          destination_photo: null
+          destination_photo_required: false
+          destination_photos: []
+          driver_tip: 10.0
+          dropoff_by: '2030-01-01T01:01:00Z'
+          electronic_bill_of_lading_photo: null
+          eta: null
+          has_load_fee: true
+          id: c22206a8-00f5-4fde-8395-c24441263f1b
+          id_birthdate: null
+          id_verification_required: true
+          id_verified_at: null
+          identifier: '1234567890'
+          index: 0
+          items:
+          - barcode: 123barcode456
+            barcode_delivery_required: true
+            barcode_pickup_required: false
+            barcode_readings: []
+            container_barcode: 123container456
+            declared_value: 1500
+            description: A Tire
+            height: 30.0
+            id: 03e534a0-b239-41d9-aa00-3adb40197388
+            length: 30.0
+            pieces: 4
+            stop_id: '123'
+            type: item
+            volume: 5400
+            weight: 25.0
+            width: 6.0
+          minimum_age: 42
+          needs_pallet_jack: false
+          po: PO or Job Number for this Match Stop
+          recipient:
+            email: john@smith.com
+            id: 13e534a0-b239-41d9-aa00-3adb40197388
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          route_index: 1
+          self_recipient: false
+          signature_instructions: null
+          signature_name: null
+          signature_photo: null
+          signature_required: false
+          signature_type: electronic
+          state: pending
+          state_transition: null
+          timeframe:
+            estimated: null
+            planned:
+              earliest_arrival: '2022-10-01 11:45:10'
+              end_time: '2022-10-01 11:45:10'
+              latest_arrival: '2022-10-01 11:45:10'
+              latest_completion: '2022-10-01 12:00:10'
+              start_time: '2022-10-01 11:45:10'
+              updated_at: '2022-10-01 11:45:10'
+            scheduled:
+              earliest_arrival: '2022-10-01 11:45:10'
+              end_time: '2022-10-01 11:45:10'
+              latest_arrival: '2022-10-01 11:45:10'
+              latest_completion: '2022-10-01 12:00:10'
+              start_time: '2022-10-01 11:45:10'
+              updated_at: '2022-10-01 11:45:10'
+          tracking_url: https://example.com/track/1234567890
+          travel_duration: 153
+          undeliverable_at: null
+          undeliverable_code: null
+        timeframe:
+          estimated: null
+          planned:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+          scheduled:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+        timezone: America/New_York
+        total_distance: 1.7
+        total_price: 198.94
+        total_volume: 21600
+        total_weight: 100
+        unload_method: null
+        vehicle_class: 2
+      properties:
+        accepted_at:
+          description: The date & time this Match was accepted by the assigned driver
+          format: date-time
+          type: string
+        accessorials:
+          description: Required accessorials for this Match
+          items:
+            $ref: '#/components/schemas/Accessorial'
+          type: array
+        activated_at:
+          description: The date & time this Match was made available to drivers
+          format: date-time
+          type: string
+        arrived_at:
+          description: The date & time the driver arrived at the pickup location
+          format: date-time
+          type: string
+        bill_of_lading_photo:
+          description: URL linking to a photo of the Bill of Lading
+          format: uri
+          type: string
+        bill_of_lading_required:
+          description: Whether this Match requires a bill of lading
+          type: boolean
+        cancel_code:
+          description: Reason code for cancellation if a Match has been canceled
+          type:
+          - string
+          - 'null'
+        cancel_reason:
+          description: Reason for cancellation if a Match has been canceled
+          type:
+          - string
+          - 'null'
+        canceled_at:
+          description: The date & time this Match was canceled
+          format: date-time
+          type: string
+        completed_at:
+          description: The date & time the last stop on this Match was delivered
+          format: date-time
+          type: string
+        contract:
+          description: If you have customized agreed-upon pricing with FRAYT, you will need to setup a corresponding contract identifier provided to you by the FRAYT team. Pricing defaults to our standard rates with the identifier in place.
+          type:
+          - string
+          - 'null'
+        coupon:
+          properties:
+            code:
+              description: Coupon code used
+              type: string
+            percentage:
+              description: Discount percent (%) from coupon
+              type: integer
+          type:
+          - object
+          - 'null'
+        defaults:
+          description: Default values for this Match, if they were not provided in the initial creation request
+          properties:
+            match_stop_items:
+              description: An object containing default values for this schema}
+              type: object
+            match_stops:
+              description: An object containing default values for this schema}
+              type: object
+            match_stops.recipient:
+              description: An object containing default values for this schema}
+              type: object
+            matches:
+              description: An object containing default values for this schema}
+              type: object
+            matches.sender:
+              description: An object containing default values for this schema}
+              type: object
+          type:
+          - object
+          - 'null'
+        driver:
+          description: The driver assigned to this Match
+          oneOf:
+          - $ref: '#/components/schemas/Driver'
+          type: object
+        dropoff_at:
+          description: Scheduled date & time the final stop is to be delivered by
+          format: date-time
+          type:
+          - string
+          - 'null'
+        id:
+          description: Unique identifier for match
+          type: string
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        inserted_at:
+          description: The date & time this Match was created
+          format: date-time
+          type: string
+        label:
+          description: Label for this Match
+          oneOf:
+          - $ref: '#/components/schemas/Label'
+          type:
+          - object
+          - 'null'
+        origin_address:
+          description: The pickup point for this Match
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          type: object
+        origin_photo:
+          description: DEPRECATED - URL linking to a photo showing the items picked up, will be fully replaced by `origin_photos`
+          format: uri
+          type: string
+        origin_photo_required:
+          description: Whether this Match requires a photo of the origin address
+          type: boolean
+        origin_photos:
+          description: List of URLs linking to photos showing the items picked up
+          type: array
+        parking_spot_required:
+          description: Whether the driver should provide their parking spot ID
+          type: boolean
+        picked_up_at:
+          description: The date & time this Match was picked up by the driver
+          format: date-time
+          type: string
+        pickup_at:
+          description: Scheduled pick up date & time
+          format: date-time
+          type:
+          - string
+          - 'null'
+        pickup_notes:
+          description: Instructions for Driver when picking up
+          type:
+          - string
+          - 'null'
+        platform:
+          default: marketplace
+          description: Whether this is a Marketplace or Deliver Pro match
+          type:
+          - string
+          - 'null'
+        po:
+          description: PO or Job Number for this Match
+          type:
+          - string
+          - 'null'
+        preferred_driver:
+          description: Designated preferred driver for this Match
+          type:
+          - string
+          - 'null'
+        rating:
+          description: Rating provided by the Shipper for the driver's performance on this Match
+          type:
+          - integer
+          - 'null'
+        required_fields:
+          description: Required fields for this Match
+          properties:
+            match_stop_items:
+              additionalProperties:
+                type: boolean
+              description: An object containing required values for this schema
+              type: object
+            match_stops:
+              additionalProperties:
+                type: boolean
+              description: An object containing required values for this schema
+              type: object
+            match_stops.recipient:
+              additionalProperties:
+                type: boolean
+              description: An object containing required values for this schema
+              type: object
+            matches:
+              additionalProperties:
+                type: boolean
+              description: An object containing required values for this schema
+              type: object
+            matches.sender:
+              additionalProperties:
+                type: boolean
+              description: An object containing required values for this schema
+              type: object
+          type:
+          - object
+          - 'null'
+        route_id:
+          description: Unique identifier for route
+          type: string
+        route_identifier:
+          description: If this is a recurring route please provide your identifier to this field.
+          type:
+          - string
+          - 'null'
+        route_index:
+          description: Index of this Match in the route
+          type: integer
+        schedule_id:
+          description: Unique identifier for the schedule this recurring Match belongs to
+          type:
+          - string
+          - 'null'
+        scheduled:
+          description: If this Match is scheduled
+          type: boolean
+        self_sender:
+          default: true
+          description: When set to `true`, `sender` will be ignored
+          type: boolean
+        sender:
+          description: The senders contact information, if different than the shippers
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        service_level:
+          description: Set `1` for dash or `2` for same day
+          enum:
+          - 1
+          - 2
+          type: integer
+        shipper_email:
+          description: 'Email of shipper this Match should be created under. If omitted, the system will:
+
+            1. Use your company''s configured default shipper (if set and approved)
+
+            2. Fall back to the first approved shipper from your company''s locations (if no default shipper configured)
+
+            3. Return an error if the default shipper is configured but not approved, or if no approved shippers are available
+
+            '
+          type:
+          - string
+          - 'null'
+        shortcode:
+          description: Shortcode identifier for this Match
+          type: string
+        signature_photo:
+          description: URL linking to a photo of the requested signature type
+          format: uri
+          type: string
+        slas:
+          description: List of the pickup and delivery SLAs for this Match
+          items:
+            $ref: '#/components/schemas/SLA'
+          type: array
+        state:
+          description: 'Current Match state<br/>
+
+            <br/>A successful Match will transition through some or all of these states:<br/>
+
+            Pending –> Inactive –> Scheduled –> Assigning Driver –> Offered –> Offer Not Accepted –> Accepted –> En Route To Pickup –> Arrived At Pickup –> Picked Up –> En Route To Return –> Arrived At Return –> Completed –> Charged
+
+            <hr/>
+
+            Unable To Pickup <i>the driver was unable to pick up all items.</i><br/>Driver Canceled <i>the driver has removed himself from a Match. The Match itself is not canceled and will be sent out to other available drivers.</i><br/>Admin Canceled <i>has been canceled by the FRAYT team</i><br/>Shipper Canceled <i>was canceled by the shipper</i><br/>Pending <i>has been estimated, but not authorized</i><br/>Inactive <i>is awaiting action from the FRAYT team before it can be sent out to drivers</i><br/>Scheduled <i>is currently scheduled for a future time, and has not been sent to drivers</i><br/>Assigning Driver <i>we are in the process of finding an available driver to assign to this Match</i><br/>Offered <i>has been offered to a driver, but has not been accepted</i><br/>Offer Not Accepted <i>the driver offered this match did not accept.</i><br/>Accepted <i>has been accepted by a driver, but is not yet on the way</i><br/>En Route To Pickup <i>the driver is on the way to the pickup location</i><br/>Arrived At Pickup <i>the driver has arrived at the pickup location</i><br/>Picked Up <i>the driver has picked up all items. Details updates on individual stops can be found under the stops state.</i><br/>En Route To Return <i>the driver is returning back to the pick up point.</i><br/>Arrived At Return <i>the driver has reached the pickup point.</i><br/>Completed <i>all stops have been completed, but not yet charged</i><br/>Charged <i>the Match has been completed and charged</i>
+
+            '
+          enum:
+          - accepted
+          - admin_canceled
+          - arrived_at_pickup
+          - arrived_at_return
+          - assigning_driver
+          - canceled
+          - charged
+          - completed
+          - driver_canceled
+          - en_route_to_pickup
+          - en_route_to_return
+          - inactive
+          - offer_not_accepted
+          - offered
+          - pending
+          - picked_up
+          - scheduled
+          - unable_to_pickup
+          type: string
+        state_transition:
+          oneOf:
+          - $ref: '#/components/schemas/StateTransition'
+          type: object
+        stops:
+          description: Stops along this Match's route
+          items:
+            $ref: '#/components/schemas/MatchStop'
+          type: array
+        timeframe:
+          description: Timeframes for this Match
+          oneOf:
+          - $ref: '#/components/schemas/Stop_Timeframe'
+          type: object
+        total_distance:
+          description: Total distance from origin to all stops
+          format: float
+          type: number
+        total_price:
+          description: Total price shipper will be charged in US dollars ($). If a cancellation fee is included, it will be shown here on cancellation.
+          format: double
+          type: number
+        total_volume:
+          description: Sum of volume of all items on all stops in cubic inches (in³)
+          type: integer
+        total_weight:
+          description: Sum of weight of all items on all stops in pounds (lbs)
+          type: integer
+        unload_method:
+          description: Service type for box trucks. This is required when the vehicle class is box truck
+          enum:
+          - dock_to_dock
+          - lift_gate
+          type:
+          - string
+          - 'null'
+        vehicle_class:
+          description: "You can especify the vehicle class and type for this match. It can be either a number or a string (see the documentation below) <br/>\n        <br/> List of available vehicle classes and types:\n        <ul>\n          <li> car </li>\n          <li> midsize </li>\n          <li> cargo_van </li>\n            <ul>\n              <li> transit </li>\n              <li> standard </li>\n              <li> sprinter </li>\n            </ul>\n          <li> pickup_truck </li>\n            <ul>\n              <li> 4ft </li>\n              <li> 5ft </li>\n              <li> 6ft </li>\n              <li> 8ft </li>\n            </ul>\n          <li> box_truck </li>\n        </ul>\n        <br/> NOTE: This can be left empty only if auto selection is enabled on your account. Reach out to the FRAYT team for more details"
+          oneOf:
+          - description: "<br/> A combination of vehicle type key and vehicle class key can be used to select a specific vehicle type. <br/>\n            <br/> For example, to select a sprinter van, the value would be `cargo_van.sprinter` You can also specify only the type, in which case the smallest vehicle class for that type will be selected.<br/>\n            "
+            type: string
+          - description: Set `1` for car, `2` for midsize, `3` for cargo van, and `4` for box truck, and `5` for pickup truck.
+            type: integer
+      title: Match
+      type: object
+    MatchStopResponse:
+      description: Response schema showing the stop
+      example:
+        arrived_at: null
+        cargo_location: null
+        cargo_location_required: false
+        delivered_at: null
+        delivery_notes: Leave by the door
+        destination_address:
+          address: 708 Walnut Street
+          address2: '500'
+          city: Cincinnati
+          country: United States
+          country_code: US
+          formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+          lat: 39.1043198
+          lng: -84.5118912
+          name: null
+          neighborhood: Central Business District
+          state: Ohio
+          state_code: OH
+          type: address
+          zip: '45202'
+        destination_photo: null
+        destination_photo_required: false
+        destination_photos: []
+        driver_tip: 10.0
+        dropoff_by: '2030-01-01T01:01:00Z'
+        electronic_bill_of_lading_photo: null
+        eta: null
+        has_load_fee: true
+        id: c22206a8-00f5-4fde-8395-c24441263f1b
+        id_birthdate: null
+        id_verification_required: true
+        id_verified_at: null
+        identifier: '1234567890'
+        index: null
+        items:
+        - barcode: 123barcode456
+          barcode_delivery_required: true
+          barcode_pickup_required: false
+          barcode_readings: []
+          container_barcode: 123container456
+          declared_value: 1500
+          description: A Tire
+          height: 30.0
+          id: 03e534a0-b239-41d9-aa00-3adb40197388
+          length: 30.0
+          pieces: 4
+          stop_id: '123'
+          type: item
+          volume: 5400
+          weight: 25.0
+          width: 6.0
+        minimum_age: 42
+        needs_pallet_jack: false
+        po: PO or Job Number for this Match Stop
+        recipient:
+          email: john@smith.com
+          id: 13e534a0-b239-41d9-aa00-3adb40197388
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        route_index: 1
+        self_recipient: false
+        signature_instructions: null
+        signature_name: null
+        signature_photo: null
+        signature_required: false
+        signature_type: electronic
+        state: pending
+        state_transition: null
+        timeframe:
+          estimated: null
+          planned:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+          scheduled:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+        tracking_url: https://example.com/track/1234567890
+        travel_duration: 153
+        undeliverable_at: null
+        undeliverable_code: null
+      properties:
+        arrived_at:
+          description: Time the driver arrived at the Stop
+          format: date-time
+          type: string
+        cargo_location:
+          description: Location where the cargo was left
+          enum:
+          - left_at_front_door
+          - left_at_mailroom_concierge
+          - left_at_side_rear_door
+          - left_with_neighbour
+          - left_behind_gate_fence
+          - left_at_lobby_entry_way
+          - handed_to_customer
+          type: string
+        cargo_location_required:
+          description: Whether a cargo location is required for this stop
+          type: boolean
+        delivered_at:
+          description: Time the Stop was delivered
+          format: date-time
+          type: string
+        delivery_notes:
+          description: Notes for the driver regarding delivery
+          type:
+          - string
+          - 'null'
+        destination_address:
+          description: The dropoff point for this Stop
+          example:
+            address: 708 Walnut Street
+            address2: '500'
+            city: Cincinnati
+            country: United States
+            country_code: US
+            formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+            lat: 39.1043198
+            lng: -84.5118912
+            name: null
+            neighborhood: Central Business District
+            state: Ohio
+            state_code: OH
+            type: address
+            zip: '45202'
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          type: object
+        destination_photo:
+          description: DEPRECATED - URL linking to POD photo, will be fully replaced by `destinaton_photos`
+          format: uri
+          type: string
+        destination_photo_required:
+          description: Whether a POD photo is required
+          type: boolean
+        destination_photos:
+          description: List of URLs linking to POD photos
+          type: array
+        driver_tip:
+          description: Additional tip for the driver in US dollars ($)
+          format: double
+          type: number
+        dropoff_by:
+          description: The latest the driver should arrive at this Stop
+          format: date-time
+          type:
+          - string
+          - 'null'
+        electronic_bill_of_lading_photo:
+          description: URL linking to EBoL photo
+          format: uri
+          type: string
+        has_load_fee:
+          default: true
+          description: Set to `true` if the driver will be required to unload the items
+          type: boolean
+        id:
+          description: Unique identifier for Match Stop
+          type: string
+        id_verification_required:
+          description: Whether ID verification is required
+          type: boolean
+        id_verified_at:
+          description: Time the id was verified
+          format: date-time
+          type: string
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        index:
+          description: DEPRECATED (look at route_index, instead) - The order that each Stop will be delivered in.
+          type: integer
+        items:
+          description: Items to be delivered at this Stop
+          items:
+            $ref: '#/components/schemas/MatchStopItem'
+          minItems: 1
+          type: array
+        minimum_age:
+          description: Minimum age required for delivery
+          type: integer
+        needs_pallet_jack:
+          default: false
+          description: Set to `true` if the driver will be required to unload pallets from a box truck with a pallet jack
+          type: boolean
+        po:
+          description: PO or Job Number for this Match Stop
+          type:
+          - string
+          - 'null'
+        recipient:
+          description: Contact for this stop's recipient
+          example:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        route_index:
+          description: The order that each Stop will be delivered in.
+          type: integer
+        self_recipient:
+          default: true
+          description: When set to `true`, `recipient_name`, `recipient_phone`, and `recipient_email` will be ignored
+          type: boolean
+        signature_instructions:
+          description: Required for photo signatures. Instructions for the driver to sign
+          type:
+          - string
+          - 'null'
+        signature_name:
+          description: Name entered by the signee when accepting the delivery
+          type: string
+        signature_photo:
+          description: URL linking to photo of signees signature
+          format: uri
+          type: string
+        signature_required:
+          description: When set to `true`, Drivers will require requesting the customer's signature at delivery time.
+          type:
+          - boolean
+          - 'null'
+        signature_type:
+          default: electronic
+          description: Type of signature required
+          enum:
+          - photo
+          - electronic
+          - electronic_bill_of_lading
+          type:
+          - string
+          - 'null'
+        state:
+          description: 'Current Stop state.<br/>
+
+            <br/>A successful Match Stop will transition through some or all of these states:<br/>
+
+            Pending –> En Route –> Arrived –> Signed –> Delivered –> Returned
+
+            <hr/>
+
+            Re Routed <i>this is a dummy stop for recordkeeping purposes. The original stop has been modified.</i><br/>Unserved <i>this stop was unable to be served in a Match. This state is only possible for Batches. A reason will be provided.</i><br/>Undeliverable <i>the driver was unable to deliver this stop. A reason will be provided.</i><br/>Pending <i>the driver is not yet en route. This is the starting state.</i><br/>En Route <i>the driver is en route to the stop</i><br/>Arrived <i>the driver has arrived at the stop</i><br/>Signed <i>the recipient has signed for the delivery of the items</i><br/>Delivered <i>the driver has completed the delivery of all items</i><br/>Returned <i>the driver has returned the package.</i>
+
+            '
+          enum:
+          - arrived
+          - delivered
+          - en_route
+          - pending
+          - re_routed
+          - returned
+          - signed
+          - undeliverable
+          - unserved
+          type: string
+        state_transition:
+          oneOf:
+          - $ref: '#/components/schemas/StateTransition'
+          type: object
+        timeframe:
+          description: Timeframes for this Stop
+          oneOf:
+          - $ref: '#/components/schemas/Stop_Timeframe'
+          type: object
+        tracking_url:
+          description: URL to track the delivery
+          format: uri
+          type: string
+        travel_duration:
+          description: Travel Duration to this Stop
+          type: integer
+        undeliverable_at:
+          description: Time the Stop was marked as unable to be delivered
+          format: date-time
+          type:
+          - string
+          - 'null'
+        undeliverable_code:
+          description: Reason a Stop was marked as unable to be delivered
+          enum:
+          - unable_to_locate_address
+          - incorrect_address
+          - recipient_refused_delivery
+          - unable_to_access_location
+          - unable_to_verify_id
+          - business_closed
+          - missing_item
+          - damaged_item
+          - out_of_time_returned
+          type:
+          - string
+          - 'null'
+      title: MatchStopResponse
+      type: object
+    Unprocessible_Entity:
+      description: Error response when problematic params are passed
+      example:
+        code: unprocessible_entity
+        message: string
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Unprocessible Entity
+      type: object
+    StateTransition:
+      description: Details regarding a record's transition from one state to another
+      example:
+        from: pending
+        match_id: 123e4567-e89b-12d3-a456-426614174000
+        notes: null
+        stop_id: null
+        to: scheduled
+        updated_at: '2030-01-01 09:30:00'
+      properties:
+        from:
+          description: State that the record transitioned from
+          type: string
+        match_id:
+          description: ID of the match if this is a match-level transition
+          type:
+          - string
+          - 'null'
+        notes:
+          description: Notes contain additional information regarding the state transition.
+          type: string
+        stop_id:
+          description: ID of the stop if this is a stop-level transition
+          type:
+          - string
+          - 'null'
+        to:
+          description: State that the record transitioned to
+          type: string
+        updated_at:
+          description: Date & time of state transition
+          format: date-time
+          type: string
+      title: StateTransition
+      type: object
+    UpdateMatchStopItem:
+      description: An Item to be delivered to a stop
+      example:
+        barcode: 123barcode456
+        barcode_delivery_required: true
+        barcode_pickup_required: false
+        container_barcode: 123container456
+        declared_value: 1500
+        description: A Tire
+        height: 30.0
+        id: c22206a8-00f5-4fde-8395-c24441263f1b
+        length: 30.0
+        pieces: 4
+        stop_id: '123'
+        type: item
+        volume: 5400
+        weight: 25.0
+        width: 6.0
+      properties:
+        barcode:
+          description: Value of barcode to be scanned for this item
+          type:
+          - string
+          - 'null'
+        barcode_delivery_required:
+          description: Barcode reading is required for this item on delivery
+          type: boolean
+        barcode_pickup_required:
+          description: Barcode reading is required for this item on pickup
+          type: boolean
+        container_barcode:
+          description: Value of barcode for the container this item is in
+          type:
+          - string
+          - 'null'
+        declared_value:
+          description: Declared value of the item being shipped in US cents (¢)
+          type: integer
+        description:
+          type: string
+        height:
+          description: Individual height of each piece in inches
+          type:
+          - number
+          - 'null'
+        id:
+          description: Unique identifier for Match Stop Item. Ensure this is present to update an existing item instead of replacing it.
+          type:
+          - string
+          - 'null'
+        length:
+          description: Individual length of each piece in inches
+          type:
+          - number
+          - 'null'
+        pieces:
+          description: Number of items that match these dimensions
+          type: integer
+        stop_id:
+          description: Unique identifier for Match Stop
+          type: string
+        type:
+          default: item
+          description: Type of item. When at least one item is a pallet, `needs_pallet_jack` will be an avaialable add-on.
+          enum:
+          - item
+          - pallet
+          - lumber
+          - sheet_rock
+          - tv
+          type: string
+        volume:
+          description: Individual volume of each piece in cubic inches (in³). If left empty, it will be calculated automatically based off of other dimensions
+          type:
+          - integer
+          - 'null'
+        weight:
+          description: Individual weight of each piece in pounds
+          type: number
+        width:
+          description: Individual width of each piece in inches
+          type:
+          - number
+          - 'null'
+      title: UpdateMatchStopItem
+      type: object
+    Not_Found:
+      description: Unable to find resource
+      example:
+        code: not_found
+        message: Not Found
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Not Found
+      type: object
+    MatchRequest:
+      description: POST body for creating a Match
+      example:
+        accessorials:
+        - key: tsa
+        dropoff_at: '2030-02-01T00:30:00Z'
+        identifier: '1234567890'
+        label:
+          format: qr_code
+          value: 1Z2Y3X4W5V6U7
+        optimize: false
+        origin_address:
+          address: 708 Walnut Street
+          address2: '500'
+          city: Cincinnati
+          country_code: US
+          lat: 39.1043198
+          lng: -84.5118912
+          name: FRAYT HQ
+          neighborhood: Central Business District
+          state_code: OH
+          zip: '45202'
+        origin_photo_required: false
+        parking_spot_required: true
+        pickup_at: '2030-02-01T00:00:00Z'
+        pickup_notes: Go to the back
+        pickup_parking_spot: ''
+        po: ABCDEFG
+        return_parking_spot: ''
+        route_identifier: Huntsville - North East, AL
+        scheduled: true
+        self_sender: false
+        sender:
+          email: john@smith.com
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        service_level: 1
+        stops:
+        - cargo_location_required: false
+          delivery_notes: Leave by the door
+          destination_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+          destination_photo_required: false
+          dropoff_by: '2030-01-01T01:01:00Z'
+          has_load_fee: true
+          id_verification_required: true
+          id_verified_at: '2025-01-01T00:00:00Z'
+          identifier: '1234567890'
+          items:
+          - barcode: 123barcode456
+            barcode_delivery_required: true
+            barcode_pickup_required: false
+            barcode_readings: []
+            container_barcode: 123container456
+            declared_value: 1500
+            description: A Tire
+            height: 30.0
+            length: 30.0
+            pieces: 4
+            stop_id: '123'
+            type: item
+            volume: 5400
+            weight: 25.0
+            width: 6.0
+          minimum_age: 42
+          needs_pallet_jack: false
+          po: PO or Job Number for this Match Stop
+          recipient:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          self_recipient: false
+          signature_required: false
+          tip_price: 1000
+        unload_method: null
+        vehicle_class: 2
+      properties:
+        accessorials:
+          description: List of unique keys for required accessorials services
+          items:
+            $ref: '#/components/schemas/Accessorial'
+          type: array
+        bill_of_lading_required:
+          default: false
+          description: '<i>DEPRECATED: For a pickup and dropoff photo of the bill of lading, set `signature_required` to `true` and `signature_type` to `photo` on the stop level. You will receive the pickup photo of the bill of lading at `match.signature_photo` and the delivery photo of the bill of lading at `match.stops[].signature_photo`.</i> <br/><br/>Whether this Match requires a bill of lading photo on pickup'
+          type: boolean
+        contract:
+          description: If you have customized agreed-upon pricing with FRAYT, you will need to setup a corresponding contract identifier provided to you by the FRAYT team. Pricing defaults to our standard rates with the identifier in place.
+          type:
+          - string
+          - 'null'
+        dropoff_at:
+          description: Scheduled date & time the final stop is to be delivered by
+          format: date-time
+          type:
+          - string
+          - 'null'
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        label:
+          description: Label for this Match
+          oneOf:
+          - $ref: '#/components/schemas/Label'
+          type:
+          - object
+          - 'null'
+        optimize:
+          description: Set to true if you want stops to be reordered in the most optimal route
+          type: boolean
+        origin_address:
+          description: The pickup point for this Match
+          oneOf:
+          - type: string
+          - $ref: '#/components/schemas/AddressRequest'
+          type: object
+        origin_photo_required:
+          description: Whether this Match requires a photo of the origin address
+          type: boolean
+        parking_spot_required:
+          description: Whether the driver should provide their parking spot ID
+          type: boolean
+        pickup_at:
+          description: Scheduled pick up date & time
+          format: date-time
+          type:
+          - string
+          - 'null'
+        pickup_notes:
+          description: Instructions for Driver when picking up
+          type:
+          - string
+          - 'null'
+        platform:
+          default: marketplace
+          description: The platform on which this match is being created
+          type:
+          - string
+          - 'null'
+        po:
+          description: PO or Job Number for this Match
+          type:
+          - string
+          - 'null'
+        preferred_driver_email:
+          description: The email of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.
+          type:
+          - string
+          - 'null'
+        preferred_driver_id:
+          description: The id of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.
+          type:
+          - string
+          - 'null'
+        route_identifier:
+          description: If this is a recurring route please provide your identifier to this field.
+          type:
+          - string
+          - 'null'
+        schedule_id:
+          description: Unique identifier for the schedule this recurring Match belongs to
+          type:
+          - string
+          - 'null'
+        scheduled:
+          description: If this Match is scheduled
+          type: boolean
+        self_sender:
+          default: true
+          description: When set to `true`, `sender` will be ignored
+          type: boolean
+        sender:
+          description: The senders contact information, if different than the shippers
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        service_level:
+          description: Set `1` for dash or `2` for same day
+          enum:
+          - 1
+          - 2
+          type: integer
+        shipper_email:
+          description: 'Email of shipper this Match should be created under. If omitted, the system will:
+
+            1. Use your company''s configured default shipper (if set and approved)
+
+            2. Fall back to the first approved shipper from your company''s locations (if no default shipper configured)
+
+            3. Return an error if the default shipper is configured but not approved, or if no approved shippers are available
+
+            '
+          type:
+          - string
+          - 'null'
+        stops:
+          description: Stops
+          items:
+            $ref: '#/components/schemas/New_MatchStop'
+          minItems: 1
+          type: array
+        unload_method:
+          description: Service type for box trucks. This is required when the vehicle class is box truck
+          enum:
+          - dock_to_dock
+          - lift_gate
+          type:
+          - string
+          - 'null'
+        vehicle_class:
+          description: "You can especify the vehicle class and type for this match. It can be either a number or a string (see the documentation below) <br/>\n        <br/> List of available vehicle classes and types:\n        <ul>\n          <li> car </li>\n          <li> midsize </li>\n          <li> cargo_van </li>\n            <ul>\n              <li> transit </li>\n              <li> standard </li>\n              <li> sprinter </li>\n            </ul>\n          <li> pickup_truck </li>\n            <ul>\n              <li> 4ft </li>\n              <li> 5ft </li>\n              <li> 6ft </li>\n              <li> 8ft </li>\n            </ul>\n          <li> box_truck </li>\n        </ul>\n        <br/> NOTE: This can be left empty only if auto selection is enabled on your account. Reach out to the FRAYT team for more details"
+          oneOf:
+          - description: "<br/> A combination of vehicle type key and vehicle class key can be used to select a specific vehicle type. <br/>\n            <br/> For example, to select a sprinter van, the value would be `cargo_van.sprinter` You can also specify only the type, in which case the smallest vehicle class for that type will be selected.<br/>\n            "
+            type: string
+          - description: Set `1` for car, `2` for midsize, `3` for cargo van, and `4` for box truck, and `5` for pickup truck.
+            type: integer
+      required:
+      - origin_address
+      - service_level
+      - stops
+      title: MatchRequest
+      type: object
+    NewMatchStopItem:
+      description: An Item to be delivered to a stop
+      example:
+        barcode: 123barcode456
+        barcode_delivery_required: true
+        barcode_pickup_required: false
+        container_barcode: 123container456
+        declared_value: 1500
+        description: A Tire
+        height: 30.0
+        length: 30.0
+        pieces: 4
+        stop_id: '123'
+        type: item
+        volume: 5400
+        weight: 25.0
+        width: 6.0
+      properties:
+        barcode:
+          description: Value of barcode to be scanned for this item
+          type:
+          - string
+          - 'null'
+        barcode_delivery_required:
+          description: Barcode reading is required for this item on delivery
+          type: boolean
+        barcode_pickup_required:
+          description: Barcode reading is required for this item on pickup
+          type: boolean
+        container_barcode:
+          description: Value of barcode for the container this item is in
+          type:
+          - string
+          - 'null'
+        declared_value:
+          description: Declared value of the item being shipped in US cents (¢)
+          type: integer
+        description:
+          type: string
+        height:
+          description: Individual height of each piece in inches
+          type:
+          - number
+          - 'null'
+        length:
+          description: Individual length of each piece in inches
+          type:
+          - number
+          - 'null'
+        pieces:
+          description: Number of items that match these dimensions
+          type: integer
+        stop_id:
+          description: Unique identifier for Match Stop
+          type: string
+        type:
+          default: item
+          description: Type of item. When at least one item is a pallet, `needs_pallet_jack` will be an avaialable add-on.
+          enum:
+          - item
+          - pallet
+          - lumber
+          - sheet_rock
+          - tv
+          type: string
+        volume:
+          description: Individual volume of each piece in cubic inches (in³). If left empty, it will be calculated automatically based off of other dimensions
+          type:
+          - integer
+          - 'null'
+        weight:
+          description: Individual weight of each piece in pounds
+          type: number
+        width:
+          description: Individual width of each piece in inches
+          type:
+          - number
+          - 'null'
+      required:
+      - weight
+      - pieces
+      - description
+      title: NewMatchStopItem
+      type: object
+    RestrictedUpdateMatchRequest:
+      description: 'PATCH body for updating a Match that has not been picked up yet.
+
+
+        To update the following fields, you must cancel the match and create a new one: `vehicle_class`, `service_level`, `unload_method`, `has_load_fee`
+
+        '
+      example:
+        accessorials:
+        - key: tsa
+        dropoff_at: '2030-02-01T00:30:00Z'
+        identifier: '1234567890'
+        label:
+          format: qr_code
+          value: 1Z2Y3X4W5V6U7
+        optimize: false
+        origin_address:
+          address: 708 Walnut Street
+          address2: '500'
+          city: Cincinnati
+          country_code: US
+          lat: 39.1043198
+          lng: -84.5118912
+          name: FRAYT HQ
+          neighborhood: Central Business District
+          state_code: OH
+          zip: '45202'
+        origin_photo_required: false
+        parking_spot_required: true
+        pickup_at: '2030-02-01T00:00:00Z'
+        pickup_notes: Go to the back
+        pickup_parking_spot: ''
+        po: ABCDEFG
+        return_parking_spot: ''
+        route_identifier: Huntsville - North East, AL
+        scheduled: true
+        self_sender: false
+        sender:
+          email: john@smith.com
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        stops:
+        - cargo_location_required: false
+          delivery_notes: Leave by the door
+          destination_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+          destination_photo_required: false
+          dropoff_by: '2030-01-01T01:01:00Z'
+          has_load_fee: true
+          id: c22206a8-00f5-4fde-8395-c24441263f1b
+          id_verification_required: true
+          id_verified_at: '2025-01-01T00:00:00Z'
+          identifier: '1234567890'
+          items:
+          - barcode: 123barcode456
+            barcode_delivery_required: true
+            barcode_pickup_required: false
+            container_barcode: 123container456
+            declared_value: 1500
+            description: A Tire
+            height: 30.0
+            id: c22206a8-00f5-4fde-8395-c24441263f1b
+            length: 30.0
+            pieces: 4
+            stop_id: '123'
+            type: item
+            volume: 5400
+            weight: 25.0
+            width: 6.0
+          minimum_age: 42
+          needs_pallet_jack: false
+          po: PO or Job Number for this Match Stop
+          recipient:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          self_recipient: false
+          signature_required: false
+          tip_price: 1000
+      properties:
+        accessorials:
+          description: List of unique keys for required accessorials services
+          items:
+            $ref: '#/components/schemas/Accessorial'
+          type: array
+        bill_of_lading_required:
+          default: false
+          description: '<i>DEPRECATED: For a pickup and dropoff photo of the bill of lading, set `signature_required` to `true` and `signature_type` to `photo` on the stop level. You will receive the pickup photo of the bill of lading at `match.signature_photo` and the delivery photo of the bill of lading at `match.stops[].signature_photo`.</i> <br/><br/>Whether this Match requires a bill of lading photo on pickup'
+          type: boolean
+        contract:
+          description: If you have customized agreed-upon pricing with FRAYT, you will need to setup a corresponding contract identifier provided to you by the FRAYT team. Pricing defaults to our standard rates with the identifier in place.
+          type:
+          - string
+          - 'null'
+        dropoff_at:
+          description: Scheduled date & time the final stop is to be delivered by
+          format: date-time
+          type:
+          - string
+          - 'null'
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        label:
+          description: Label for this Match
+          oneOf:
+          - $ref: '#/components/schemas/Label'
+          type:
+          - object
+          - 'null'
+        optimize:
+          description: Set to true if you want stops to be reordered in the most optimal route
+          type: boolean
+        origin_address:
+          description: The pickup point for this Match
+          oneOf:
+          - type: string
+          - $ref: '#/components/schemas/AddressRequest'
+          type: object
+        origin_photo_required:
+          description: Whether this Match requires a photo of the origin address
+          type: boolean
+        parking_spot_required:
+          description: Whether the driver should provide their parking spot ID
+          type: boolean
+        pickup_at:
+          description: Scheduled pick up date & time
+          format: date-time
+          type:
+          - string
+          - 'null'
+        pickup_notes:
+          description: Instructions for Driver when picking up
+          type:
+          - string
+          - 'null'
+        platform:
+          default: marketplace
+          description: The platform on which this match is being created
+          type:
+          - string
+          - 'null'
+        po:
+          description: PO or Job Number for this Match
+          type:
+          - string
+          - 'null'
+        preferred_driver_email:
+          description: The email of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.
+          type:
+          - string
+          - 'null'
+        preferred_driver_id:
+          description: The id of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.
+          type:
+          - string
+          - 'null'
+        route_identifier:
+          description: If this is a recurring route please provide your identifier to this field.
+          type:
+          - string
+          - 'null'
+        schedule_id:
+          description: Unique identifier for the schedule this recurring Match belongs to
+          type:
+          - string
+          - 'null'
+        scheduled:
+          description: If this Match is scheduled
+          type: boolean
+        self_sender:
+          default: true
+          description: When set to `true`, `sender` will be ignored
+          type: boolean
+        sender:
+          description: The senders contact information, if different than the shippers
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        stops:
+          description: Stops
+          items:
+            $ref: '#/components/schemas/Update_MatchStop'
+          minItems: 1
+          type: array
+      title: RestrictedUpdateMatchRequest
+      type: object
+    Unauthorized:
+      description: No credentials were provided
+      example:
+        code: unauthenticated
+        message: You are not logged in
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Unauthorized
+      type: object
+    AddressRequest:
+      description: A Goecoded address
+      example:
+        address: 708 Walnut Street
+        address2: '500'
+        city: Cincinnati
+        country_code: US
+        lat: 39.1043198
+        lng: -84.5118912
+        name: FRAYT HQ
+        neighborhood: Central Business District
+        state_code: OH
+        zip: '45202'
+      properties:
+        address:
+          description: Address line 1
+          type: string
+        address2:
+          description: Address line 2
+          type:
+          - string
+          - 'null'
+        city:
+          description: City
+          type: string
+        country_code:
+          description: Country
+          type: string
+        lat:
+          description: Latitude point of address
+          format: float
+          type: number
+        lng:
+          description: Longitude point of address
+          format: float
+          type: number
+        name:
+          description: The name of this address. This could be a store name, a park, or any other name
+          type:
+          - string
+          - 'null'
+        neighborhood:
+          description: The general neighborhood the address is located in
+          type:
+          - string
+          - 'null'
+        state_code:
+          description: State code (e.g. OH)
+          type: string
+        zip:
+          description: Zipcode
+          type: string
+      required:
+      - address
+      - city
+      - state_code
+      - zip
+      - country_code
+      - lat
+      - lng
+      title: AddressRequest
+      type: object
+    Stop_Timeframe:
+      description: Timeframes for a stop
+      example:
+        estimated: null
+        planned:
+          earliest_arrival: '2022-10-01 11:45:10'
+          end_time: '2022-10-01 11:45:10'
+          latest_arrival: '2022-10-01 11:45:10'
+          latest_completion: '2022-10-01 12:00:10'
+          start_time: '2022-10-01 11:45:10'
+          updated_at: '2022-10-01 11:45:10'
+        scheduled:
+          earliest_arrival: '2022-10-01 11:45:10'
+          end_time: '2022-10-01 11:45:10'
+          latest_arrival: '2022-10-01 11:45:10'
+          latest_completion: '2022-10-01 12:00:10'
+          start_time: '2022-10-01 11:45:10'
+          updated_at: '2022-10-01 11:45:10'
+      properties:
+        planned:
+          description: Planned timeframe for the stop, calculated at the driver's accepted time
+          oneOf:
+          - $ref: '#/components/schemas/Timeframe'
+          type: object
+        scheduled:
+          description: Scheduled timeframe for the stop, calculated at the shipper's scheduled time
+          oneOf:
+          - $ref: '#/components/schemas/Timeframe'
+          type: object
+      title: Stop Timeframe
+      type: object
+    SLA:
+      description: SLA schema showing the pickup or delivery windows for a Match
+      example:
+        completed_at: null
+        end_time: 2020-09-28T09:31
+        start_time: 2020-09-28T09:31
+        type: pickup
+      properties:
+        completed_at:
+          description: The time the SLA was fulfilled (ISO format)
+          example: 2020-09-28T09:31
+          format: date-time
+          type: string
+        end_time:
+          description: The end time of the SLA window (ISO format)
+          example: 2020-09-28T09:31
+          format: date-time
+          type: string
+        start_time:
+          description: The start time of the SLA window (ISO format)
+          example: 2020-09-28T09:31
+          format: date-time
+          type: string
+        type:
+          description: The type of SLA (pickup or delivery)
+          type: string
+      title: SLA
+      type: object
+    Accessorial:
+      description: An add-on service for a shipment
+      example:
+        key: tsa
+      properties:
+        key:
+          description: Unique key for Accessorial
+          type: string
+      title: Accessorial
+      type: object
+    MatchStop:
+      description: A Stop on a Match
+      example:
+        arrived_at: null
+        cargo_location: null
+        cargo_location_required: false
+        delivered_at: null
+        delivery_notes: Leave by the door
+        destination_address:
+          address: 708 Walnut Street
+          address2: '500'
+          city: Cincinnati
+          country: United States
+          country_code: US
+          formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+          lat: 39.1043198
+          lng: -84.5118912
+          name: null
+          neighborhood: Central Business District
+          state: Ohio
+          state_code: OH
+          type: address
+          zip: '45202'
+        destination_photo: null
+        destination_photo_required: false
+        destination_photos: []
+        driver_tip: 10.0
+        dropoff_by: '2030-01-01T01:01:00Z'
+        electronic_bill_of_lading_photo: null
+        eta: null
+        has_load_fee: true
+        id: c22206a8-00f5-4fde-8395-c24441263f1b
+        id_birthdate: null
+        id_verification_required: true
+        id_verified_at: null
+        identifier: '1234567890'
+        index: null
+        items:
+        - barcode: 123barcode456
+          barcode_delivery_required: true
+          barcode_pickup_required: false
+          barcode_readings: []
+          container_barcode: 123container456
+          declared_value: 1500
+          description: A Tire
+          height: 30.0
+          id: 03e534a0-b239-41d9-aa00-3adb40197388
+          length: 30.0
+          pieces: 4
+          stop_id: '123'
+          type: item
+          volume: 5400
+          weight: 25.0
+          width: 6.0
+        minimum_age: 42
+        needs_pallet_jack: false
+        po: PO or Job Number for this Match Stop
+        recipient:
+          email: john@smith.com
+          id: 13e534a0-b239-41d9-aa00-3adb40197388
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        route_index: 1
+        self_recipient: false
+        signature_instructions: null
+        signature_name: null
+        signature_photo: null
+        signature_required: false
+        signature_type: electronic
+        state: pending
+        state_transition: null
+        timeframe:
+          estimated: null
+          planned:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+          scheduled:
+            earliest_arrival: '2022-10-01 11:45:10'
+            end_time: '2022-10-01 11:45:10'
+            latest_arrival: '2022-10-01 11:45:10'
+            latest_completion: '2022-10-01 12:00:10'
+            start_time: '2022-10-01 11:45:10'
+            updated_at: '2022-10-01 11:45:10'
+        tracking_url: https://example.com/track/1234567890
+        travel_duration: 153
+        undeliverable_at: null
+        undeliverable_code: null
+      properties:
+        arrived_at:
+          description: Time the driver arrived at the Stop
+          format: date-time
+          type: string
+        cargo_location:
+          description: Location where the cargo was left
+          enum:
+          - left_at_front_door
+          - left_at_mailroom_concierge
+          - left_at_side_rear_door
+          - left_with_neighbour
+          - left_behind_gate_fence
+          - left_at_lobby_entry_way
+          - handed_to_customer
+          type: string
+        cargo_location_required:
+          description: Whether a cargo location is required for this stop
+          type: boolean
+        delivered_at:
+          description: Time the Stop was delivered
+          format: date-time
+          type: string
+        delivery_notes:
+          description: Notes for the driver regarding delivery
+          type:
+          - string
+          - 'null'
+        destination_address:
+          description: The dropoff point for this Stop
+          example:
+            address: 708 Walnut Street
+            address2: '500'
+            city: Cincinnati
+            country: United States
+            country_code: US
+            formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+            lat: 39.1043198
+            lng: -84.5118912
+            name: null
+            neighborhood: Central Business District
+            state: Ohio
+            state_code: OH
+            type: address
+            zip: '45202'
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+          type: object
+        destination_photo:
+          description: DEPRECATED - URL linking to POD photo, will be fully replaced by `destinaton_photos`
+          format: uri
+          type: string
+        destination_photo_required:
+          description: Whether a POD photo is required
+          type: boolean
+        destination_photos:
+          description: List of URLs linking to POD photos
+          type: array
+        driver_tip:
+          description: Additional tip for the driver in US dollars ($)
+          format: double
+          type: number
+        dropoff_by:
+          description: The latest the driver should arrive at this Stop
+          format: date-time
+          type:
+          - string
+          - 'null'
+        electronic_bill_of_lading_photo:
+          description: URL linking to EBoL photo
+          format: uri
+          type: string
+        has_load_fee:
+          default: true
+          description: Set to `true` if the driver will be required to unload the items
+          type: boolean
+        id:
+          description: Unique identifier for Match Stop
+          type: string
+        id_verification_required:
+          description: Whether ID verification is required
+          type: boolean
+        id_verified_at:
+          description: Time the id was verified
+          format: date-time
+          type: string
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        index:
+          description: DEPRECATED (look at route_index, instead) - The order that each Stop will be delivered in.
+          type: integer
+        items:
+          description: Items to be delivered at this Stop
+          items:
+            $ref: '#/components/schemas/MatchStopItem'
+          minItems: 1
+          type: array
+        minimum_age:
+          description: Minimum age required for delivery
+          type: integer
+        needs_pallet_jack:
+          default: false
+          description: Set to `true` if the driver will be required to unload pallets from a box truck with a pallet jack
+          type: boolean
+        po:
+          description: PO or Job Number for this Match Stop
+          type:
+          - string
+          - 'null'
+        recipient:
+          description: Contact for this stop's recipient
+          example:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        route_index:
+          description: The order that each Stop will be delivered in.
+          type: integer
+        self_recipient:
+          default: true
+          description: When set to `true`, `recipient_name`, `recipient_phone`, and `recipient_email` will be ignored
+          type: boolean
+        signature_instructions:
+          description: Required for photo signatures. Instructions for the driver to sign
+          type:
+          - string
+          - 'null'
+        signature_name:
+          description: Name entered by the signee when accepting the delivery
+          type: string
+        signature_photo:
+          description: URL linking to photo of signees signature
+          format: uri
+          type: string
+        signature_required:
+          description: When set to `true`, Drivers will require requesting the customer's signature at delivery time.
+          type:
+          - boolean
+          - 'null'
+        signature_type:
+          default: electronic
+          description: Type of signature required
+          enum:
+          - photo
+          - electronic
+          - electronic_bill_of_lading
+          type:
+          - string
+          - 'null'
+        state:
+          description: 'Current Stop state.<br/>
+
+            <br/>A successful Match Stop will transition through some or all of these states:<br/>
+
+            Pending –> En Route –> Arrived –> Signed –> Delivered –> Returned
+
+            <hr/>
+
+            Re Routed <i>this is a dummy stop for recordkeeping purposes. The original stop has been modified.</i><br/>Unserved <i>this stop was unable to be served in a Match. This state is only possible for Batches. A reason will be provided.</i><br/>Undeliverable <i>the driver was unable to deliver this stop. A reason will be provided.</i><br/>Pending <i>the driver is not yet en route. This is the starting state.</i><br/>En Route <i>the driver is en route to the stop</i><br/>Arrived <i>the driver has arrived at the stop</i><br/>Signed <i>the recipient has signed for the delivery of the items</i><br/>Delivered <i>the driver has completed the delivery of all items</i><br/>Returned <i>the driver has returned the package.</i>
+
+            '
+          enum:
+          - arrived
+          - delivered
+          - en_route
+          - pending
+          - re_routed
+          - returned
+          - signed
+          - undeliverable
+          - unserved
+          type: string
+        state_transition:
+          oneOf:
+          - $ref: '#/components/schemas/StateTransition'
+          type: object
+        timeframe:
+          description: Timeframes for this Stop
+          oneOf:
+          - $ref: '#/components/schemas/Stop_Timeframe'
+          type: object
+        tracking_url:
+          description: URL to track the delivery
+          format: uri
+          type: string
+        travel_duration:
+          description: Travel Duration to this Stop
+          type: integer
+        undeliverable_at:
+          description: Time the Stop was marked as unable to be delivered
+          format: date-time
+          type:
+          - string
+          - 'null'
+        undeliverable_code:
+          description: Reason a Stop was marked as unable to be delivered
+          enum:
+          - unable_to_locate_address
+          - incorrect_address
+          - recipient_refused_delivery
+          - unable_to_access_location
+          - unable_to_verify_id
+          - business_closed
+          - missing_item
+          - damaged_item
+          - out_of_time_returned
+          type:
+          - string
+          - 'null'
+      required:
+      - items
+      - destination_address
+      title: MatchStop
+      type: object
+    Contact:
+      description: A contact
+      example:
+        email: john@smith.com
+        name: John Smith
+        notify: false
+        phone_number: +1 202-555-0199
+      properties:
+        email:
+          description: Contact's email address
+          format: email
+          type:
+          - string
+          - 'null'
+        name:
+          description: Contact's first name and last name
+          type: string
+        notify:
+          description: Set to `false` if the contact should not receive SMS and email notifications regarding the status of this shipment
+          type: boolean
+        phone_number:
+          description: Contact's phone number in the general international format for telephone numbers (E.164)
+          type:
+          - string
+          - 'null'
+      required:
+      - name
+      title: Contact
+      type: object
+    New_MatchStop:
+      description: A Stop on a Match
+      example:
+        cargo_location_required: false
+        delivery_notes: Leave by the door
+        destination_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+        destination_photo_required: false
+        dropoff_by: '2030-01-01T01:01:00Z'
+        has_load_fee: true
+        id_verification_required: true
+        id_verified_at: '2025-01-01T00:00:00Z'
+        identifier: '1234567890'
+        items:
+        - barcode: 123barcode456
+          barcode_delivery_required: true
+          barcode_pickup_required: false
+          barcode_readings: []
+          container_barcode: 123container456
+          declared_value: 1500
+          description: A Tire
+          height: 30.0
+          length: 30.0
+          pieces: 4
+          stop_id: '123'
+          type: item
+          volume: 5400
+          weight: 25.0
+          width: 6.0
+        minimum_age: 42
+        needs_pallet_jack: false
+        po: PO or Job Number for this Match Stop
+        recipient:
+          email: john@smith.com
+          name: John Smith
+          notify: false
+          phone_number: +1 202-555-0199
+        self_recipient: false
+        signature_required: false
+        tip_price: 1000
+      properties:
+        cargo_location_required:
+          description: Whether a cargo location is required for this stop
+          type: boolean
+        delivery_notes:
+          description: Notes for the driver regarding delivery
+          type:
+          - string
+          - 'null'
+        destination_address:
+          description: The dropoff point for this Stop
+          oneOf:
+          - type: string
+          - $ref: '#/components/schemas/AddressRequest'
+          type: object
+        destination_photo_required:
+          description: Whether a POD photo is required
+          type: boolean
+        dropoff_by:
+          description: The latest the driver should arrive at this Stop
+          format: date-time
+          type:
+          - string
+          - 'null'
+        has_load_fee:
+          default: true
+          description: Set to `true` if the driver will be required to unload the items
+          type: boolean
+        id_verification_required:
+          default: false
+          description: Whether ID verification is required
+          type: boolean
+        id_verified_at:
+          description: Time the recipient's ID was verified
+          format: date-time
+          type:
+          - string
+          - 'null'
+        identifier:
+          description: Unique identifier from external system. This will be returned in all responses, including webhooks.
+          type:
+          - string
+          - 'null'
+        items:
+          description: Items to be delivered at this Stop
+          items:
+            $ref: '#/components/schemas/NewMatchStopItem'
+          minItems: 1
+          type: array
+        minimum_age:
+          description: Minimum age required for delivery
+          type:
+          - integer
+          - 'null'
+        needs_pallet_jack:
+          default: false
+          description: Set to `true` if the driver will be required to unload pallets from a box truck with a pallet jack
+          type: boolean
+        po:
+          description: PO or Job Number for this Match Stop
+          type:
+          - string
+          - 'null'
+        recipient:
+          description: Contact for this stop's recipient
+          example:
+            email: john@smith.com
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          oneOf:
+          - $ref: '#/components/schemas/Contact'
+          type:
+          - object
+          - 'null'
+        self_recipient:
+          default: true
+          description: When set to `true`, `recipient_name`, `recipient_phone`, and `recipient_email` will be ignored
+          type: boolean
+        signature_instructions:
+          description: Required for photo signatures. Instructions for the driver to sign
+          type:
+          - string
+          - 'null'
+        signature_required:
+          description: When set to `true`, Drivers will require requesting the customer's signature at delivery time.
+          type:
+          - boolean
+          - 'null'
+        signature_type:
+          default: electronic
+          description: Type of signature required
+          enum:
+          - photo
+          - electronic
+          - electronic_bill_of_lading
+          type:
+          - string
+          - 'null'
+        tip_price:
+          default: 0
+          description: Additional tip for the driver in US cents (¢)
+          type: integer
+      required:
+      - items
+      - destination_address
+      title: New MatchStop
+      type: object
+    Forbidden:
+      description: Invalid/expired credentials were provided or permissions are insufficient
+      example:
+        code: forbidden
+        message: string
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Forbidden
+      type: object
+    CancelMatchRequest:
+      description: DELETE body for canceling a Match
+      example:
+        cancel_reason: your reason
+      properties:
+        cancel_reason:
+          description: The reason for canceling this Match
+          type: string
+      title: CancelMatchRequest
+      type: object
+    MatchResponse:
+      description: Response schema showing all stops
+      example:
+        response:
+          accepted_at: null
+          accessorials:
+          - description: Driver must be certified by the TSA for this Match
+            id: 1e261ee8-71b3-480a-908d-168941ccea05
+            key: tsa
+            name: TSA Certification
+          activated_at: null
+          arrived_at: null
+          bill_of_lading_photo: null
+          bill_of_lading_required: false
+          cancel_code: null
+          cancel_reason: null
+          canceled_at: null
+          completed_at: null
+          contract:
+            allowed_cancellation_states:
+            - inactive
+            - scheduled
+            - assigning_driver
+            company_id: null
+            contract_key: frayt_dash
+            id: 346519d2-db50-44ca-b2f7-d50771efc03f
+            name: Dash
+          coupon: null
+          defaults:
+            match_stop_items:
+              barcode_delivery_required: false
+              barcode_pickup_required: false
+              type: item
+            match_stops:
+              cargo_location_required: false
+              destination_photo_required: true
+              has_load_fee: true
+              id_verification_required: false
+              needs_pallet_jack: false
+              self_recipient: true
+              signature_required: true
+              signature_type: electronic
+            match_stops.recipient:
+              notify: false
+            matches:
+              origin_photo_required: false
+              parking_spot_required: false
+            matches.sender:
+              notify: false
+          driver: null
+          dropoff_at: '2030-02-01T00:30:00Z'
+          eta: null
+          fees:
+          - amount: 14000
+            description: TSA Service Fee
+            id: 1e261ee8-71b3-480a-908d-168941ccea05
+            name: TSA Certification
+            original_amount: 0
+            type: tsa_wait_fee
+          - amount: 4894
+            description: null
+            id: 1e261ee8-71b3-480a-908d-168941ccea05
+            name: Base Fee
+            original_amount: 0
+            type: base_fee
+          - amount: 1000
+            description: null
+            id: 1e261ee8-71b3-480a-908d-168941ccea05
+            name: Driver Tip
+            original_amount: 0
+            type: driver_tip
+          id: 0000c119-fca6-4531-8b7f-716efb54ef26
+          identifier: '1234567890'
+          inserted_at: '2030-01-01T00:19:50Z'
+          label:
+            format: qr_code
+            value: 1Z2Y3X4W5V6U7
+          optimized_stops: false
+          origin_address:
+            address: 708 Walnut Street
+            address2: '500'
+            city: Cincinnati
+            country: United States
+            country_code: US
+            formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+            lat: 39.1043198
+            lng: -84.5118912
+            name: FRAYT HQ
+            neighborhood: Central Business District
+            state: Ohio
+            state_code: OH
+            type: address
+            zip: '45202'
+          origin_photo: null
+          origin_photo_required: false
+          origin_photos: []
+          parking_spot_required: true
+          picked_up_at: null
+          pickup_at: '2030-02-01T00:00:00Z'
+          pickup_notes: Go to the back
+          pickup_parking_spot: ''
+          platform: marketplace
+          po: ABCDEFG
+          preferred_driver: null
+          price_discount: 0.0
+          rating: null
+          rating_reason: null
+          required_fields: {}
+          return_parking_spot: ''
+          route_id: 0000c119-fca6-4531-8b7f-716efb54ef26
+          route_identifier: Huntsville - North East, AL
+          route_index: 0
+          schedule_id: null
+          scheduled: true
+          self_sender: false
+          sender:
+            email: john@smith.com
+            id: 23e534a0-b239-41d9-aa00-3adb40197388
+            name: John Smith
+            notify: false
+            phone_number: +1 202-555-0199
+          service_level: 1
+          shortcode: ABCDEFGH
+          signature_photo: null
+          slas:
+          - completed_at: null
+            end_time: '2030-02-01T00:30:00Z'
+            start_time: '2030-02-01T00:00:00Z'
+            type: pickup
+          - completed_at: null
+            end_time: '2030-02-01T01:30:00Z'
+            start_time: '2030-02-01T00:00:00Z'
+            type: delivery
+          state: scheduled
+          state_transition:
+            from: pending
+            match_id: 123e4567-e89b-12d3-a456-426614174000
+            notes: null
+            stop_id: null
+            to: scheduled
+            updated_at: '2030-01-01 09:30:00'
+          stops:
+          - arrived_at: null
+            cargo_location: null
+            cargo_location_required: false
+            delivered_at: null
+            delivery_notes: Leave by the door
+            destination_address:
+              address: 708 Walnut Street
+              address2: '500'
+              city: Cincinnati
+              country: United States
+              country_code: US
+              formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+              lat: 39.1043198
+              lng: -84.5118912
+              name: null
+              neighborhood: Central Business District
+              state: Ohio
+              state_code: OH
+              type: address
+              zip: '45202'
+            destination_photo: null
+            destination_photo_required: false
+            destination_photos: []
+            driver_tip: 10.0
+            dropoff_by: '2030-01-01T01:01:00Z'
+            electronic_bill_of_lading_photo: null
+            eta: null
+            has_load_fee: true
+            id: c22206a8-00f5-4fde-8395-c24441263f1b
+            id_birthdate: null
+            id_verification_required: true
+            id_verified_at: null
+            identifier: '1234567890'
+            index: 0
+            items:
+            - barcode: 123barcode456
+              barcode_delivery_required: true
+              barcode_pickup_required: false
+              barcode_readings: []
+              container_barcode: 123container456
+              declared_value: 1500
+              description: A Tire
+              height: 30.0
+              id: 03e534a0-b239-41d9-aa00-3adb40197388
+              length: 30.0
+              pieces: 4
+              stop_id: '123'
+              type: item
+              volume: 5400
+              weight: 25.0
+              width: 6.0
+            minimum_age: 42
+            needs_pallet_jack: false
+            po: PO or Job Number for this Match Stop
+            recipient:
+              email: john@smith.com
+              id: 13e534a0-b239-41d9-aa00-3adb40197388
+              name: John Smith
+              notify: false
+              phone_number: +1 202-555-0199
+            route_index: 1
+            self_recipient: false
+            signature_instructions: null
+            signature_name: null
+            signature_photo: null
+            signature_required: false
+            signature_type: electronic
+            state: pending
+            state_transition: null
+            timeframe:
+              estimated: null
+              planned:
+                earliest_arrival: '2022-10-01 11:45:10'
+                end_time: '2022-10-01 11:45:10'
+                latest_arrival: '2022-10-01 11:45:10'
+                latest_completion: '2022-10-01 12:00:10'
+                start_time: '2022-10-01 11:45:10'
+                updated_at: '2022-10-01 11:45:10'
+              scheduled:
+                earliest_arrival: '2022-10-01 11:45:10'
+                end_time: '2022-10-01 11:45:10'
+                latest_arrival: '2022-10-01 11:45:10'
+                latest_completion: '2022-10-01 12:00:10'
+                start_time: '2022-10-01 11:45:10'
+                updated_at: '2022-10-01 11:45:10'
+            tracking_url: https://example.com/track/1234567890
+            travel_duration: 153
+            undeliverable_at: null
+            undeliverable_code: null
+          timeframe:
+            estimated: null
+            planned:
+              earliest_arrival: '2022-10-01 11:45:10'
+              end_time: '2022-10-01 11:45:10'
+              latest_arrival: '2022-10-01 11:45:10'
+              latest_completion: '2022-10-01 12:00:10'
+              start_time: '2022-10-01 11:45:10'
+              updated_at: '2022-10-01 11:45:10'
+            scheduled:
+              earliest_arrival: '2022-10-01 11:45:10'
+              end_time: '2022-10-01 11:45:10'
+              latest_arrival: '2022-10-01 11:45:10'
+              latest_completion: '2022-10-01 12:00:10'
+              start_time: '2022-10-01 11:45:10'
+              updated_at: '2022-10-01 11:45:10'
+          timezone: America/New_York
+          total_distance: 1.7
+          total_price: 198.94
+          total_volume: 21600
+          total_weight: 100
+          unload_method: null
+          vehicle_class: 2
+      properties:
+        response:
+          $ref: '#/components/schemas/Match'
+      title: MatchResponse
+      type: object
+    Driver:
+      description: A Driver
+      example:
+        current_location:
+          created_at: 2020-09-28T09:31
+          id: 00021f0f-0ccb-4773-8983-4cb4ef519fab
+          lat: 39.109793
+          lng: -84.515256
+        email: bob@smith.co
+        first_name: Bob
+        id: 0ff660a4-4866-4382-a008-c942d33e0cb6
+        last_name: Smith
+        phone_number: '+19998887777'
+        vehicle_make: Tesla
+        vehicle_model: Cybertruck
+        vehicle_year: '2022'
+      properties:
+        current_location:
+          properties:
+            created_at:
+              description: Date & time of last driver location update
+              format: date-time
+              type: string
+            id:
+              description: Unique identifier for driver's location
+              type: string
+            lat:
+              description: Latitude point of driver's location
+              format: float
+              type: number
+            lng:
+              description: Longitude point of driver's location
+              format: float
+              type: number
+          type: object
+        email:
+          description: Email associated with driver
+          format: email
+          type: string
+        first_name:
+          type: string
+        id:
+          description: Unique identifier for driver
+          type: string
+        last_name:
+          type: string
+        phone_number:
+          description: Driver's phone number
+          type: string
+        vehicle_make:
+          description: Make of the driver's vehicle
+          type: string
+        vehicle_model:
+          description: Model of the driver's vehicle
+          type: string
+        vehicle_year:
+          description: Manufacturing year of the driver's vehicle
+          type: string
+      title: Driver
+      type: object
+    Label:
+      description: A label containing a format and a value used for generating a barcode or QR code.
+      example:
+        format: qr_code
+        value: 1Z2Y3X4W5V6U7
+      properties:
+        format:
+          description: The format of the label
+          enum:
+          - code_128
+          - qr_code
+          - code_39
+          type: string
+        value:
+          description: The value of the label
+          type: string
+      title: Label
+      type: object
+    UpdateDriverTip:
+      description: PATCH body for updating the driver tip at a given stop.
+      example:
+        tip: 1000
+      properties:
+        tip:
+          description: The new tip amount in US cents (¢)
+          type: integer
+      required:
+      - tip
+      title: UpdateDriverTip
+      type: object
+    Barcode_Reading:
+      description: ''
+      example:
+        barcode: 123barcode456
+        inserted_at: '2030-01-01T00:19:50Z'
+        photo: base64:image
+        state: captured
+        type: pickup
+      properties:
+        barcode:
+          description: Barcode for Match Stop Item
+          type: string
+        inserted_at:
+          description: The date & time this reading was created
+          format: date-time
+          type: string
+        photo:
+          description: Item photo. A photo should be taken when a barcode can't be read
+          type: string
+        state:
+          description: State of reading it could be captured, missing or verified
+          enum:
+          - captured
+          - missing
+          - verified
+          type: string
+        type:
+          description: Reading type it could be pickup or delivery
+          enum:
+          - pickup
+          - delivery
+          type: string
+      title: Barcode Reading
+      type: object
+    Address:
+      description: A Goecoded address
+      example:
+        address: 708 Walnut Street
+        address2: '500'
+        city: Cincinnati
+        country: United States
+        country_code: US
+        formatted_address: 708 Walnut Street 500, Cincinnati, Ohio 45202, US
+        lat: 39.1043198
+        lng: -84.5118912
+        name: null
+        neighborhood: Central Business District
+        state: Ohio
+        state_code: OH
+        type: address
+        zip: '45202'
+      properties:
+        address:
+          description: Address line 1
+          type: string
+        address2:
+          description: Address line 2
+          type: string
+        city:
+          description: City
+          type: string
+        country_code:
+          description: Country
+          type: string
+        formatted_address:
+          description: Combined address components in a human readable string
+          type: string
+        lat:
+          description: Latitude point of address
+          format: float
+          type: number
+        lng:
+          description: Longitude point of address
+          format: float
+          type: number
+        name:
+          description: The name of this address. This could be a store name, a park, or any other name
+          type: string
+        neighborhood:
+          description: The general neighborhood the address is located in
+          type: string
+        state:
+          description: Full state name
+          type: string
+        state_code:
+          description: State code (e.g. OH)
+          type: string
+        zip:
+          description: Zipcode
+          type: string
+      title: Address
+      type: object
+    MatchStopItem:
+      description: An Item to be delivered to a stop
+      example:
+        barcode: 123barcode456
+        barcode_delivery_required: true
+        barcode_pickup_required: false
+        barcode_readings: []
+        container_barcode: 123container456
+        declared_value: 1500
+        description: A Tire
+        height: 30.0
+        length: 30.0
+        pieces: 4
+        stop_id: '123'
+        type: item
+        volume: 5400
+        weight: 25.0
+        width: 6.0
+      properties:
+        barcode:
+          description: Value of barcode to be scanned for this item
+          type:
+          - string
+          - 'null'
+        barcode_delivery_required:
+          description: Barcode reading is required for this item on delivery
+          type: boolean
+        barcode_pickup_required:
+          description: Barcode reading is required for this item on pickup
+          type: boolean
+        barcode_readings:
+          description: ''
+          items:
+            $ref: '#/components/schemas/Barcode_Reading'
+          type: array
+        container_barcode:
+          description: Value of barcode for the container this item is in
+          type:
+          - string
+          - 'null'
+        declared_value:
+          description: Declared value of the item being shipped in US cents (¢)
+          type: integer
+        description:
+          type: string
+        height:
+          description: Individual height of each piece in inches
+          type:
+          - number
+          - 'null'
+        id:
+          description: Unique identifier for Match Stop Item
+          type: string
+        length:
+          description: Individual length of each piece in inches
+          type:
+          - number
+          - 'null'
+        pieces:
+          description: Number of items that match these dimensions
+          type: integer
+        stop_id:
+          description: Unique identifier for Match Stop
+          type: string
+        type:
+          default: item
+          description: Type of item. When at least one item is a pallet, `needs_pallet_jack` will be an avaialable add-on.
+          enum:
+          - item
+          - pallet
+          - lumber
+          - sheet_rock
+          - tv
+          type: string
+        volume:
+          description: Individual volume of each piece in cubic inches (in³). If left empty, it will be calculated automatically based off of other dimensions
+          type:
+          - integer
+          - 'null'
+        weight:
+          description: Individual weight of each piece in pounds
+          type: number
+        width:
+          description: Individual width of each piece in inches
+          type:
+          - number
+          - 'null'
+      title: MatchStopItem
+      type: object
+  securitySchemes:
+    authorization:
+      scheme: bearer
+      type: http
