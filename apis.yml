@@ -138,8 +138,6 @@ apis:
   humanURL: https://www.frayt.com/frayt-api
   baseURL: https://api.frayt.com/api/v2.2/
   tags:
-  - Authentication
-  tags_raw:
   - oauth
   properties:
   - type: OpenAPI
