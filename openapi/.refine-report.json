@@ -1,0 +1,34 @@
+{
+  "provider": "frayt",
+  "sources": [
+    "_original/frayt-api-openapi-original.json"
+  ],
+  "outputs": [
+    "frayt-match-estimates-api-openapi.yml",
+    "frayt-matches-api-openapi.yml",
+    "frayt-oauth-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "3 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "frayt-api-openapi-original.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0; renamed 10 component key(s) illegal in 3.x (e.g. Bad Request)",
+    "frayt-api-openapi-original.json: declared missing tag: match estimates",
+    "frayt-api-openapi-original.json: declared missing tag: matches",
+    "frayt-api-openapi-original.json: declared missing tag: oauth",
+    "superseded outputs removed: frayt-o-auth-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 3 total)"
+  ],
+  "skipped": [
+    "_original/frayt-oauth-openapi.yml: archived document superseded by a larger archived document",
+    "_original/frayt-matches-openapi.yml: archived document superseded by a larger archived document",
+    "_original/frayt-match-estimates-openapi.yml: archived document superseded by a larger archived document",
+    "frayt-match-estimates-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "frayt-matches-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "frayt-o-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
