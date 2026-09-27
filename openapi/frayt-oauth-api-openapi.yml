@@ -4,7 +4,7 @@ info:
 
 
     Welcome to the FRAYT''s REST API.'
-  title: FRAYT Client OAUTH API
+  title: FRAYT Client OAuth API
   version: '2.2'
 servers:
 - url: https://api.frayt.com
@@ -49,20 +49,6 @@ paths:
       - OAuth
 components:
   schemas:
-    Forbidden:
-      description: Invalid/expired credentials were provided or permissions are insufficient
-      example:
-        code: forbidden
-        message: string
-      properties:
-        code:
-          description: Error code
-          type: string
-        message:
-          description: Human readable message explaining the error
-          type: string
-      title: Forbidden
-      type: object
     Oauth_Response:
       description: Issued access (bearer) token
       example:
@@ -80,25 +66,6 @@ components:
       required:
       - response
       title: Oauth Response
-      type: object
-    Oauth_Request:
-      description: Company Oauth credentials
-      example:
-        client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      properties:
-        client_id:
-          description: Required client ID
-          type: string
-        client_secret:
-          description: Client secret key (optional if secret is present)
-          type: string
-        secret:
-          description: Secret key (optional if client_secret is present)
-          type: string
-      required:
-      - client_id
-      title: Oauth Request
       type: object
     Invalid_Parameters:
       description: Error response when invalid paramaters are passed
@@ -118,6 +85,39 @@ components:
             type: object
           type: array
       title: Invalid Parameters
+      type: object
+    Forbidden:
+      description: Invalid/expired credentials were provided or permissions are insufficient
+      example:
+        code: forbidden
+        message: string
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Forbidden
+      type: object
+    Oauth_Request:
+      description: Company Oauth credentials
+      example:
+        client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      properties:
+        client_id:
+          description: Required client ID
+          type: string
+        client_secret:
+          description: Client secret key (optional if secret is present)
+          type: string
+        secret:
+          description: Secret key (optional if client_secret is present)
+          type: string
+      required:
+      - client_id
+      title: Oauth Request
       type: object
   securitySchemes:
     authorization:
