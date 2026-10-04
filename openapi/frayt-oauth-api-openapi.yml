@@ -49,6 +49,25 @@ paths:
       - OAuth
 components:
   schemas:
+    Invalid_Parameters:
+      description: Error response when invalid paramaters are passed
+      properties:
+        errors:
+          items:
+            properties:
+              detail:
+                type: string
+              source:
+                properties:
+                  pointer:
+                    type: string
+                type: object
+              title:
+                type: string
+            type: object
+          type: array
+      title: Invalid Parameters
+      type: object
     Forbidden:
       description: Invalid/expired credentials were provided or permissions are insufficient
       example:
@@ -62,25 +81,6 @@ components:
           description: Human readable message explaining the error
           type: string
       title: Forbidden
-      type: object
-    Oauth_Request:
-      description: Company Oauth credentials
-      example:
-        client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      properties:
-        client_id:
-          description: Required client ID
-          type: string
-        client_secret:
-          description: Client secret key (optional if secret is present)
-          type: string
-        secret:
-          description: Secret key (optional if client_secret is present)
-          type: string
-      required:
-      - client_id
-      title: Oauth Request
       type: object
     Oauth_Response:
       description: Issued access (bearer) token
@@ -100,24 +100,24 @@ components:
       - response
       title: Oauth Response
       type: object
-    Invalid_Parameters:
-      description: Error response when invalid paramaters are passed
+    Oauth_Request:
+      description: Company Oauth credentials
+      example:
+        client_id: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        secret: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
       properties:
-        errors:
-          items:
-            properties:
-              detail:
-                type: string
-              source:
-                properties:
-                  pointer:
-                    type: string
-                type: object
-              title:
-                type: string
-            type: object
-          type: array
-      title: Invalid Parameters
+        client_id:
+          description: Required client ID
+          type: string
+        client_secret:
+          description: Client secret key (optional if secret is present)
+          type: string
+        secret:
+          description: Secret key (optional if client_secret is present)
+          type: string
+      required:
+      - client_id
+      title: Oauth Request
       type: object
   securitySchemes:
     authorization:
