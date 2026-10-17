@@ -82,24 +82,6 @@ components:
           type: string
       title: Forbidden
       type: object
-    Oauth_Response:
-      description: Issued access (bearer) token
-      example:
-        response:
-          token: xxxxxx...
-      properties:
-        response:
-          properties:
-            token:
-              description: Bearer access token
-              type: string
-          required:
-          - token
-          type: object
-      required:
-      - response
-      title: Oauth Response
-      type: object
     Oauth_Request:
       description: Company Oauth credentials
       example:
@@ -118,6 +100,24 @@ components:
       required:
       - client_id
       title: Oauth Request
+      type: object
+    Oauth_Response:
+      description: Issued access (bearer) token
+      example:
+        response:
+          token: xxxxxx...
+      properties:
+        response:
+          properties:
+            token:
+              description: Bearer access token
+              type: string
+          required:
+          - token
+          type: object
+      required:
+      - response
+      title: Oauth Response
       type: object
   securitySchemes:
     authorization:
