@@ -1,0 +1,587 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/frayt/main/json-schema/frayt-match-request-schema.json",
+  "title": "MatchRequest",
+  "description": "POST body for creating a Match",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/MatchRequest",
+  "properties": {
+    "accessorials": {
+      "description": "List of unique keys for required accessorials services",
+      "items": {
+        "$ref": "#/$defs/Accessorial"
+      },
+      "type": "array"
+    },
+    "bill_of_lading_required": {
+      "default": false,
+      "description": "<i>DEPRECATED: For a pickup and dropoff photo of the bill of lading, set `signature_required` to `true` and `signature_type` to `photo` on the stop level. You will receive the pickup photo of the bill of lading at `match.signature_photo` and the delivery photo of the bill of lading at `match.stops[].signature_photo`.</i> <br/><br/>Whether this Match requires a bill of lading photo on pickup",
+      "type": "boolean"
+    },
+    "contract": {
+      "description": "If you have customized agreed-upon pricing with FRAYT, you will need to setup a corresponding contract identifier provided to you by the FRAYT team. Pricing defaults to our standard rates with the identifier in place.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dropoff_at": {
+      "description": "Scheduled date & time the final stop is to be delivered by",
+      "format": "date-time",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "identifier": {
+      "description": "Unique identifier from external system. This will be returned in all responses, including webhooks.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "label": {
+      "description": "Label for this Match",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Label"
+        }
+      ],
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "optimize": {
+      "description": "Set to true if you want stops to be reordered in the most optimal route",
+      "type": "boolean"
+    },
+    "origin_address": {
+      "description": "The pickup point for this Match",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/AddressRequest"
+        }
+      ],
+      "type": "object"
+    },
+    "origin_photo_required": {
+      "description": "Whether this Match requires a photo of the origin address",
+      "type": "boolean"
+    },
+    "parking_spot_required": {
+      "description": "Whether the driver should provide their parking spot ID",
+      "type": "boolean"
+    },
+    "pickup_at": {
+      "description": "Scheduled pick up date & time",
+      "format": "date-time",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "pickup_notes": {
+      "description": "Instructions for Driver when picking up",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "platform": {
+      "default": "marketplace",
+      "description": "The platform on which this match is being created",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "po": {
+      "description": "PO or Job Number for this Match",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preferred_driver_email": {
+      "description": "The email of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preferred_driver_id": {
+      "description": "The id of your preferred driver. The email of your preferred driver. Setting either the preferred_driver_email or preferred_driver_id fields will cause the match to be created as a preferred driver match. If a matching driver is not found then the preferred driver match will be created but without a preferred driver and a match update request will need to be made to attach a preferred driver.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "route_identifier": {
+      "description": "If this is a recurring route please provide your identifier to this field.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schedule_id": {
+      "description": "Unique identifier for the schedule this recurring Match belongs to",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scheduled": {
+      "description": "If this Match is scheduled",
+      "type": "boolean"
+    },
+    "self_sender": {
+      "default": true,
+      "description": "When set to `true`, `sender` will be ignored",
+      "type": "boolean"
+    },
+    "sender": {
+      "description": "The senders contact information, if different than the shippers",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Contact"
+        }
+      ],
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "service_level": {
+      "description": "Set `1` for dash or `2` for same day",
+      "enum": [
+        1,
+        2
+      ],
+      "type": "integer"
+    },
+    "shipper_email": {
+      "description": "Email of shipper this Match should be created under. If omitted, the system will:\n1. Use your company's configured default shipper (if set and approved)\n2. Fall back to the first approved shipper from your company's locations (if no default shipper configured)\n3. Return an error if the default shipper is configured but not approved, or if no approved shippers are available\n",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "stops": {
+      "description": "Stops",
+      "items": {
+        "$ref": "#/$defs/New_MatchStop"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "unload_method": {
+      "description": "Service type for box trucks. This is required when the vehicle class is box truck",
+      "enum": [
+        "dock_to_dock",
+        "lift_gate"
+      ],
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vehicle_class": {
+      "description": "You can especify the vehicle class and type for this match. It can be either a number or a string (see the documentation below) <br/>\n        <br/> List of available vehicle classes and types:\n        <ul>\n          <li> car </li>\n          <li> midsize </li>\n          <li> cargo_van </li>\n            <ul>\n              <li> transit </li>\n              <li> standard </li>\n              <li> sprinter </li>\n            </ul>\n          <li> pickup_truck </li>\n            <ul>\n              <li> 4ft </li>\n              <li> 5ft </li>\n              <li> 6ft </li>\n              <li> 8ft </li>\n            </ul>\n          <li> box_truck </li>\n        </ul>\n        <br/> NOTE: This can be left empty only if auto selection is enabled on your account. Reach out to the FRAYT team for more details",
+      "oneOf": [
+        {
+          "description": "<br/> A combination of vehicle type key and vehicle class key can be used to select a specific vehicle type. <br/>\n            <br/> For example, to select a sprinter van, the value would be `cargo_van.sprinter` You can also specify only the type, in which case the smallest vehicle class for that type will be selected.<br/>\n            ",
+          "type": "string"
+        },
+        {
+          "description": "Set `1` for car, `2` for midsize, `3` for cargo van, and `4` for box truck, and `5` for pickup truck.",
+          "type": "integer"
+        }
+      ]
+    }
+  },
+  "required": [
+    "origin_address",
+    "service_level",
+    "stops"
+  ],
+  "type": "object",
+  "$defs": {
+    "Accessorial": {
+      "description": "An add-on service for a shipment",
+      "properties": {
+        "key": {
+          "description": "Unique key for Accessorial",
+          "type": "string"
+        }
+      },
+      "title": "Accessorial",
+      "type": "object"
+    },
+    "AddressRequest": {
+      "description": "A Goecoded address",
+      "properties": {
+        "address": {
+          "description": "Address line 1",
+          "type": "string"
+        },
+        "address2": {
+          "description": "Address line 2",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "description": "City",
+          "type": "string"
+        },
+        "country_code": {
+          "description": "Country",
+          "type": "string"
+        },
+        "lat": {
+          "description": "Latitude point of address",
+          "format": "float",
+          "type": "number"
+        },
+        "lng": {
+          "description": "Longitude point of address",
+          "format": "float",
+          "type": "number"
+        },
+        "name": {
+          "description": "The name of this address. This could be a store name, a park, or any other name",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "neighborhood": {
+          "description": "The general neighborhood the address is located in",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state_code": {
+          "description": "State code (e.g. OH)",
+          "type": "string"
+        },
+        "zip": {
+          "description": "Zipcode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "city",
+        "state_code",
+        "zip",
+        "country_code",
+        "lat",
+        "lng"
+      ],
+      "title": "AddressRequest",
+      "type": "object"
+    },
+    "Contact": {
+      "description": "A contact",
+      "properties": {
+        "email": {
+          "description": "Contact's email address",
+          "format": "email",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "description": "Contact's first name and last name",
+          "type": "string"
+        },
+        "notify": {
+          "description": "Set to `false` if the contact should not receive SMS and email notifications regarding the status of this shipment",
+          "type": "boolean"
+        },
+        "phone_number": {
+          "description": "Contact's phone number in the general international format for telephone numbers (E.164)",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Contact",
+      "type": "object"
+    },
+    "Label": {
+      "description": "A label containing a format and a value used for generating a barcode or QR code.",
+      "properties": {
+        "format": {
+          "description": "The format of the label",
+          "enum": [
+            "code_128",
+            "qr_code",
+            "code_39"
+          ],
+          "type": "string"
+        },
+        "value": {
+          "description": "The value of the label",
+          "type": "string"
+        }
+      },
+      "title": "Label",
+      "type": "object"
+    },
+    "NewMatchStopItem": {
+      "description": "An Item to be delivered to a stop",
+      "properties": {
+        "barcode": {
+          "description": "Value of barcode to be scanned for this item",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "barcode_delivery_required": {
+          "description": "Barcode reading is required for this item on delivery",
+          "type": "boolean"
+        },
+        "barcode_pickup_required": {
+          "description": "Barcode reading is required for this item on pickup",
+          "type": "boolean"
+        },
+        "container_barcode": {
+          "description": "Value of barcode for the container this item is in",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "declared_value": {
+          "description": "Declared value of the item being shipped in US cents (¢)",
+          "type": "integer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "height": {
+          "description": "Individual height of each piece in inches",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "length": {
+          "description": "Individual length of each piece in inches",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pieces": {
+          "description": "Number of items that match these dimensions",
+          "type": "integer"
+        },
+        "stop_id": {
+          "description": "Unique identifier for Match Stop",
+          "type": "string"
+        },
+        "type": {
+          "default": "item",
+          "description": "Type of item. When at least one item is a pallet, `needs_pallet_jack` will be an avaialable add-on.",
+          "enum": [
+            "item",
+            "pallet",
+            "lumber",
+            "sheet_rock",
+            "tv"
+          ],
+          "type": "string"
+        },
+        "volume": {
+          "description": "Individual volume of each piece in cubic inches (in³). If left empty, it will be calculated automatically based off of other dimensions",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "weight": {
+          "description": "Individual weight of each piece in pounds",
+          "type": "number"
+        },
+        "width": {
+          "description": "Individual width of each piece in inches",
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "weight",
+        "pieces",
+        "description"
+      ],
+      "title": "NewMatchStopItem",
+      "type": "object"
+    },
+    "New_MatchStop": {
+      "description": "A Stop on a Match",
+      "properties": {
+        "cargo_location_required": {
+          "description": "Whether a cargo location is required for this stop",
+          "type": "boolean"
+        },
+        "delivery_notes": {
+          "description": "Notes for the driver regarding delivery",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "destination_address": {
+          "description": "The dropoff point for this Stop",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/$defs/AddressRequest"
+            }
+          ],
+          "type": "object"
+        },
+        "destination_photo_required": {
+          "description": "Whether a POD photo is required",
+          "type": "boolean"
+        },
+        "dropoff_by": {
+          "description": "The latest the driver should arrive at this Stop",
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "has_load_fee": {
+          "default": true,
+          "description": "Set to `true` if the driver will be required to unload the items",
+          "type": "boolean"
+        },
+        "id_verification_required": {
+          "default": false,
+          "description": "Whether ID verification is required",
+          "type": "boolean"
+        },
+        "id_verified_at": {
+          "description": "Time the recipient's ID was verified",
+          "format": "date-time",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identifier": {
+          "description": "Unique identifier from external system. This will be returned in all responses, including webhooks.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "items": {
+          "description": "Items to be delivered at this Stop",
+          "items": {
+            "$ref": "#/$defs/NewMatchStopItem"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "minimum_age": {
+          "description": "Minimum age required for delivery",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "needs_pallet_jack": {
+          "default": false,
+          "description": "Set to `true` if the driver will be required to unload pallets from a box truck with a pallet jack",
+          "type": "boolean"
+        },
+        "po": {
+          "description": "PO or Job Number for this Match Stop",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recipient": {
+          "description": "Contact for this stop's recipient",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Contact"
+            }
+          ],
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "self_recipient": {
+          "default": true,
+          "description": "When set to `true`, `recipient_name`, `recipient_phone`, and `recipient_email` will be ignored",
+          "type": "boolean"
+        },
+        "signature_instructions": {
+          "description": "Required for photo signatures. Instructions for the driver to sign",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "signature_required": {
+          "description": "When set to `true`, Drivers will require requesting the customer's signature at delivery time.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "signature_type": {
+          "default": "electronic",
+          "description": "Type of signature required",
+          "enum": [
+            "photo",
+            "electronic",
+            "electronic_bill_of_lading"
+          ],
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tip_price": {
+          "default": 0,
+          "description": "Additional tip for the driver in US cents (¢)",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "items",
+        "destination_address"
+      ],
+      "title": "New MatchStop",
+      "type": "object"
+    }
+  }
+}

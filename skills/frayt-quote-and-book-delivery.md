@@ -1,5 +1,6 @@
 ---
-name: Quote and book a FRAYT delivery
+name: frayt-quote-and-book-delivery
+title: Quote and book a FRAYT delivery
 description: >-
   Price a last-mile delivery with FRAYT, then authorize that quote into a live
   Match so a driver is dispatched. Covers OAuth token exchange, the estimate ->

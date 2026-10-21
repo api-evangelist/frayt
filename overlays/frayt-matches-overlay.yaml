@@ -2,7 +2,7 @@ overlay: 1.0.0
 info:
   title: API Evangelist enhancements for the FRAYT Client API — Matches
   version: 1.0.0
-extends: openapi/frayt-matches-openapi.yml
+extends: ../openapi/_original/frayt-matches-openapi.yml
 x-generated: '2026-08-16'
 x-method: generated
 x-source: >-

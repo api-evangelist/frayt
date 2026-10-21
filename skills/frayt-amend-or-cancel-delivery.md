@@ -1,10 +1,11 @@
 ---
-name: Amend, tip, or cancel a FRAYT delivery
+name: frayt-amend-or-cancel-delivery
+title: Amend, tip, or cancel a FRAYT delivery
 description: >-
   Change a Match that is already live, add or adjust a driver tip on a stop, or
   cancel the delivery — with the cost consequences and the confirm-before-write rules
   each one carries.
-api: openapi/frayt-matches-openapi.yml
+api: openapi/frayt-matches-api-openapi.yml
 generated: '2026-08-16'
 method: generated
 source: >-

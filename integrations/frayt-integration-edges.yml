@@ -1,3 +1,31 @@
+generated: '2026-10-20'
+method: searched
+source:
+- https://registry.npmjs.org
+- https://pypi.org/pypi
+- https://rubygems.org/api/v1
+- https://crates.io/api/v1
+- https://repo1.maven.org/maven2
+- https://api.nuget.org/v3
+- https://proxy.golang.org
+- https://zapier.com/apps/frayt/integrations
+- https://n8n.io/integrations/frayt/
+- https://composio.dev/toolkits/frayt
+- https://monid.ai/tools/frayt
+checked:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
+- https://composio.dev/toolkits/frayt
+- https://monid.ai/tools/frayt
+- https://n8n.io/integrations/frayt/
+- https://zapier.com/apps/frayt/integrations
+summary: null
+marketplace_apps: []
 edges:
 - partner_name: npm registry
   partner: npm
@@ -29,21 +57,4 @@ edges:
     detected: '2026-10-18'
   detected_by: sweep-official-sdks.py
   first_seen: '2026-10-18'
-generated: '2026-10-18'
-method: searched
-source:
-- https://api.nuget.org/v3
-- https://crates.io/api/v1
-- https://proxy.golang.org
-- https://pypi.org/pypi
-- https://registry.npmjs.org
-- https://repo1.maven.org/maven2
-- https://rubygems.org/api/v1
-checked:
-- https://api.nuget.org/v3
-- https://crates.io/api/v1
-- https://proxy.golang.org
-- https://pypi.org/pypi
-- https://registry.npmjs.org
-- https://repo1.maven.org/maven2
-- https://rubygems.org/api/v1
+templates: []

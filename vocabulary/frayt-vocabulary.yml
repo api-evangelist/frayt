@@ -1,0 +1,195 @@
+generated: '2026-10-20'
+method: derived
+generator: derive-vocabulary.py
+source:
+- openapi/frayt-match-estimates-api-openapi.yml
+- openapi/frayt-matches-api-openapi.yml
+- openapi/frayt-oauth-api-openapi.yml
+vocabulary:
+  name: FRAYT Domain Vocabulary
+  description: 'Terms declared by FRAYT''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-20'
+  terms:
+  - term: StateTransition
+    definition: Details regarding a record's transition from one state to another
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/StateTransition
+  - term: Forbidden
+    definition: Invalid/expired credentials were provided or permissions are insufficient
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Forbidden
+  - term: Label
+    definition: A label containing a format and a value used for generating a barcode or QR code.
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Label
+  - term: Not Found
+    definition: Unable to find resource
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Not_Found
+  - term: Contact
+    definition: A contact
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Contact
+  - term: MatchStop
+    definition: A Stop on a Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/MatchStop
+  - term: MatchStopItem
+    definition: An Item to be delivered to a stop
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/MatchStopItem
+  - term: MatchRequest
+    definition: POST body for creating a Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/MatchRequest
+  - term: UpdateEstimateRequest
+    definition: PATCH body for authorizing a Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/UpdateEstimateRequest
+  - term: Stop Timeframe
+    definition: Timeframes for a stop
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Stop_Timeframe
+  - term: MatchResponse
+    definition: Response schema showing all stops
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/MatchResponse
+  - term: NewMatchStopItem
+    definition: An Item to be delivered to a stop
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/NewMatchStopItem
+  - term: Update MatchStop
+    definition: Body for updating a Match Stop.
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Update_MatchStop
+  - term: Accessorial
+    definition: An add-on service for a shipment
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Accessorial
+  - term: Unauthorized
+    definition: No credentials were provided
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Unauthorized
+  - term: SLA
+    definition: SLA schema showing the pickup or delivery windows for a Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/SLA
+  - term: Driver
+    definition: A Driver
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Driver
+  - term: UpdateMatchStopItem
+    definition: An Item to be delivered to a stop
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/UpdateMatchStopItem
+  - term: Timeframe
+    definition: Timeframe for a stop
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Timeframe
+  - term: Match
+    definition: A Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Match
+  - term: Address
+    definition: A Goecoded address
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Address
+  - term: New MatchStop
+    definition: A Stop on a Match
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/New_MatchStop
+  - term: AddressRequest
+    definition: A Goecoded address
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/AddressRequest
+  - term: Barcode Reading
+    definition: 'Object declared by the contract with fields: barcode, inserted_at, photo, state, type.'
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Barcode_Reading
+  - term: Invalid Parameters
+    definition: Error response when invalid paramaters are passed
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Invalid_Parameters
+  - term: Unprocessible Entity
+    definition: Error response when problematic params are passed
+    tags:
+    - Object
+    source: openapi/frayt-match-estimates-api-openapi.yml#/components/schemas/Unprocessible_Entity
+  - term: MatchStopResponse
+    definition: Response schema showing the stop
+    tags:
+    - Object
+    source: openapi/frayt-matches-api-openapi.yml#/components/schemas/MatchStopResponse
+  - term: Bad Request
+    definition: There is an issue with you request
+    tags:
+    - Object
+    source: openapi/frayt-matches-api-openapi.yml#/components/schemas/Bad_Request
+  - term: UpdateDriverTip
+    definition: PATCH body for updating the driver tip at a given stop.
+    tags:
+    - Object
+    source: openapi/frayt-matches-api-openapi.yml#/components/schemas/UpdateDriverTip
+  - term: RestrictedUpdateMatchRequest
+    definition: 'PATCH body for updating a Match that has not been picked up yet. To update the following fields, you must cancel the match and
+      create a new one: `vehicle_class`, `service_level`, `unload_method`, `has_load_fee`'
+    tags:
+    - Object
+    source: openapi/frayt-matches-api-openapi.yml#/components/schemas/RestrictedUpdateMatchRequest
+  - term: CancelMatchRequest
+    definition: DELETE body for canceling a Match
+    tags:
+    - Object
+    source: openapi/frayt-matches-api-openapi.yml#/components/schemas/CancelMatchRequest
+  - term: Oauth Request
+    definition: Company Oauth credentials
+    tags:
+    - Object
+    source: openapi/frayt-oauth-api-openapi.yml#/components/schemas/Oauth_Request
+  - term: Oauth Response
+    definition: Issued access (bearer) token
+    tags:
+    - Object
+    source: openapi/frayt-oauth-api-openapi.yml#/components/schemas/Oauth_Response
+  - term: match estimates
+    definition: 'Resource group in the contract; its operation POST /api/v2.2/matches/estimate: This endpoint is for fetching an estimate to get
+      a price quote.'
+    tags:
+    - Resource Group
+    source: openapi/frayt-match-estimates-api-openapi.yml
+  - term: Matches
+    definition: 'Resource group in the contract; its operation POST /api/v2.2/matches: Create an authorized match'
+    tags:
+    - Resource Group
+    source: openapi/frayt-matches-api-openapi.yml
+  - term: OAuth
+    definition: 'Resource group in the contract; its operation POST /api/v2.2/oauth/token: Get bearer token for use in protected API calls`'
+    tags:
+    - Resource Group
+    source: openapi/frayt-oauth-api-openapi.yml

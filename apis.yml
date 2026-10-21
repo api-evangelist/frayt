@@ -1,15 +1,16 @@
 aid: frayt
+
 name: FRAYT
-description: 'FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand
-  and scheduled middle-mile and last-mile delivery marketplace that connects shippers
-  to a vetted nationwide network of owner-operator drivers running everything from
-  cars and midsize vehicles to pickups, cargo vans and box trucks. The FRAYT Client
-  API is a versioned REST API (v2.2) over JSON, secured with OAuth 2.0 client-credentials
-  bearer tokens, that lets a TMS, ERP or storefront price a delivery as an "estimate",
-  authorize it into a "match", track it through the driver lifecycle, tip a driver
-  and cancel it — with webhook callbacks defined in the OpenAPI itself for real-time
-  match and driver-location updates. A full sandbox environment mirrors production.'
+
+description: FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand and scheduled middle-mile and last-mile delivery marketplace
+  that connects shippers to a vetted nationwide network of owner-operator drivers running everything from cars and midsize vehicles to pickups,
+  cargo vans and box trucks. The FRAYT Client API is a versioned REST API (v2.2) over JSON, secured with OAuth 2.0 client-credentials bearer tokens,
+  that lets a TMS, ERP or storefront price a delivery as an "estimate", authorize it into a "match", track it through the driver lifecycle, tip
+  a driver and cancel it — with webhook callbacks defined in the OpenAPI itself for real-time match and driver-location updates. A full sandbox
+  environment mirrors production.
+
 url: https://raw.githubusercontent.com/api-evangelist/frayt/refs/heads/main/apis.yml
+
 deliveryModel:
   model: saas
   open_source: false
@@ -22,6 +23,7 @@ deliveryModel:
   - pricing
   generated: '2026-08-28'
   method: derived
+
 accessModel:
   pricing: unknown
   onboarding: unknown
@@ -37,12 +39,19 @@ accessModel:
   - sandbox
   generated: '2026-09-03'
   method: derived
+
 image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+
 x-type: company
+
 x-source: harvest:secondary-market
+
 specificationVersion: '0.23'
+
 created: '2026-08-16'
+
 modified: '2026-08-16'
+
 tags:
 - Company
 - Last Mile Delivery
@@ -56,6 +65,7 @@ tags:
 - Third Party Logistics
 - Delivery Tracking
 - Webhook
+
 tags_raw:
 - Company
 - Last Mile Delivery
@@ -69,107 +79,38 @@ tags_raw:
 - Third Party Logistics
 - Delivery Tracking
 - Webhooks
-apis:
-- aid: frayt:frayt-match-estimates-api
-  name: FRAYT match estimates API
-  description: The match estimates API from FRAYT — 2 operation(s) for match estimates.
-  humanURL: https://www.frayt.com/frayt-api
-  baseURL: https://api.frayt.com/api/v2.2/
-  tags:
-  - match estimates
-  properties:
-  - type: OpenAPI
-    url: openapi/frayt-match-estimates-api-openapi.yml
-  - type: Documentation
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: APIReference
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: GettingStarted
-    url: https://www.frayt.com/frayt-api
-  - type: DeveloperPortal
-    url: https://www.frayt.com/3pl/api
-  - type: Authentication
-    url: authentication/frayt-authentication.yml
-  - type: Conventions
-    url: conventions/frayt-conventions.yml
-  - type: ErrorCatalog
-    url: errors/frayt-problem-types.yml
-  - type: DataModel
-    url: data-model/frayt-data-model.yml
-  - type: Webhooks
-    url: asyncapi/frayt-match-webhooks.yml
-  - type: Sandbox
-    url: sandbox/frayt-sandbox.yml
-- aid: frayt:frayt-matches-api
-  name: FRAYT Matches API
-  description: The matches API from FRAYT — 3 operation(s) for matches.
-  humanURL: https://www.frayt.com/frayt-api
-  baseURL: https://api.frayt.com/api/v2.2/
-  tags:
-  - Matches
-  tags_raw:
-  - matches
-  properties:
-  - type: OpenAPI
-    url: openapi/frayt-matches-api-openapi.yml
-  - type: Documentation
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: APIReference
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: GettingStarted
-    url: https://www.frayt.com/frayt-api
-  - type: DeveloperPortal
-    url: https://www.frayt.com/3pl/api
-  - type: Authentication
-    url: authentication/frayt-authentication.yml
-  - type: Conventions
-    url: conventions/frayt-conventions.yml
-  - type: ErrorCatalog
-    url: errors/frayt-problem-types.yml
-  - type: DataModel
-    url: data-model/frayt-data-model.yml
-  - type: Webhooks
-    url: asyncapi/frayt-match-webhooks.yml
-  - type: Sandbox
-    url: sandbox/frayt-sandbox.yml
-- aid: frayt:frayt-oauth-api
-  name: FRAYT OAUTH API
-  description: The oauth API from FRAYT — 1 operation(s) for oauth.
-  humanURL: https://www.frayt.com/frayt-api
-  baseURL: https://api.frayt.com/api/v2.2/
-  tags:
-  - Authentication
-  tags_raw:
-  - oauth
-  properties:
-  - type: OpenAPI
-    url: openapi/frayt-oauth-api-openapi.yml
-  - type: Documentation
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: APIReference
-    url: https://api.frayt.com/docs/api/v2.2
-  - type: GettingStarted
-    url: https://www.frayt.com/frayt-api
-  - type: DeveloperPortal
-    url: https://www.frayt.com/3pl/api
-  - type: Authentication
-    url: authentication/frayt-authentication.yml
-  - type: Conventions
-    url: conventions/frayt-conventions.yml
-  - type: ErrorCatalog
-    url: errors/frayt-problem-types.yml
-  - type: DataModel
-    url: data-model/frayt-data-model.yml
-  - type: Webhooks
-    url: asyncapi/frayt-match-webhooks.yml
-  - type: Sandbox
-    url: sandbox/frayt-sandbox.yml
+
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+
 common:
+- type: Documentation
+  url: https://dev.frayt.com/
+- type: Spectral
+  url: rules/frayt-rules.yml
+- type: JSONLD
+  url: json-ld/frayt-context.jsonld
+- type: Vocabulary
+  url: vocabulary/frayt-vocabulary.yml
+- type: WellKnown
+  url: well-known/frayt-well-known.yml
+- type: Hosts
+  url: hosts/frayt-hosts.yml
+- type: IntegrationEdges
+  url: integrations/frayt-integration-edges.yml
+- type: Vendors
+  url: vendors/frayt-vendors.yml
+- type: SDKs
+  url: packages/frayt-packages.yml
+- type: Newsroom
+  url: https://www.frayt.com/resources/news
+- type: Leadership
+  url: https://www.frayt.com/leadership
+- type: DeveloperPortal
+  url: https://dev.frayt.com
 - type: Overlay
   url: overlays/frayt-matches-overlay.yaml
 - type: AgenticAccess
@@ -204,10 +145,126 @@ common:
   url: skills/_index.yml
 - type: Plans
   url: plans/frayt-plans-pricing.yml
-- type: RateLimits
-  url: rate-limits/frayt-rate-limits.yml
+
+apis:
+- aid: frayt:frayt-match-estimates-api
+  name: FRAYT match estimates API
+  description: The match estimates API from FRAYT — 2 operation(s) for match estimates.
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - match estimates
+  properties:
+  - type: OpenAPI
+    url: openapi/frayt-match-estimates-api-openapi.yml
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
+  - type: JSONSchema
+    url: json-schema/frayt-match-request-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-update-estimate-request-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-match-response-schema.json
+- aid: frayt:frayt-matches-api
+  name: FRAYT Matches API
+  description: The matches API from FRAYT — 3 operation(s) for matches.
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - Matches
+  tags_raw:
+  - matches
+  properties:
+  - type: OpenAPI
+    url: openapi/frayt-matches-api-openapi.yml
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
+  - type: JSONSchema
+    url: json-schema/frayt-match-stop-response-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-match-request-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-match-response-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-restricted-update-match-request-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-update-driver-tip-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-cancel-match-request-schema.json
+- aid: frayt:frayt-oauth-api
+  name: FRAYT OAUTH API
+  description: The oauth API from FRAYT — 1 operation(s) for oauth.
+  humanURL: https://www.frayt.com/frayt-api
+  baseURL: https://api.frayt.com/api/v2.2/
+  tags:
+  - Authentication
+  tags_raw:
+  - oauth
+  properties:
+  - type: OpenAPI
+    url: openapi/frayt-oauth-api-openapi.yml
+  - type: Documentation
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: APIReference
+    url: https://api.frayt.com/docs/api/v2.2
+  - type: GettingStarted
+    url: https://www.frayt.com/frayt-api
+  - type: DeveloperPortal
+    url: https://www.frayt.com/3pl/api
+  - type: Authentication
+    url: authentication/frayt-authentication.yml
+  - type: Conventions
+    url: conventions/frayt-conventions.yml
+  - type: ErrorCatalog
+    url: errors/frayt-problem-types.yml
+  - type: DataModel
+    url: data-model/frayt-data-model.yml
+  - type: Webhooks
+    url: asyncapi/frayt-match-webhooks.yml
+  - type: Sandbox
+    url: sandbox/frayt-sandbox.yml
+  - type: JSONSchema
+    url: json-schema/frayt-oauth-request-schema.json
+  - type: JSONSchema
+    url: json-schema/frayt-oauth-response-schema.json
 x-enrichment:
-  date: '2026-08-16'
+  date: '2026-10-20'
   status: enriched
-  artifacts_added: 17
-  pass: local-v1
+  artifacts_added: 0
+  pass: local-v5

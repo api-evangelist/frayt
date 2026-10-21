@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/frayt/main/json-schema/frayt-cancel-match-request-schema.json",
+  "title": "CancelMatchRequest",
+  "description": "DELETE body for canceling a Match",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/frayt-matches-api-openapi.yml#/components/schemas/CancelMatchRequest",
+  "properties": {
+    "cancel_reason": {
+      "description": "The reason for canceling this Match",
+      "type": "string"
+    }
+  },
+  "type": "object"
+}

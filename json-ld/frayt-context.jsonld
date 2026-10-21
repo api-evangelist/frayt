@@ -1,0 +1,613 @@
+{
+  "@context": {
+    "@vocab": "https://frayt.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "frayt": "https://frayt.com/schema#",
+    "StateTransition": "frayt:StateTransition",
+    "from": {
+      "@id": "frayt:from",
+      "@type": "xsd:string"
+    },
+    "match_id": {
+      "@id": "frayt:match_id",
+      "@type": "xsd:string"
+    },
+    "notes": {
+      "@id": "frayt:notes",
+      "@type": "xsd:string"
+    },
+    "stop_id": {
+      "@id": "frayt:stop_id",
+      "@type": "xsd:string"
+    },
+    "to": {
+      "@id": "frayt:to",
+      "@type": "xsd:string"
+    },
+    "updated_at": {
+      "@id": "frayt:updated_at",
+      "@type": "xsd:dateTime"
+    },
+    "Forbidden": "frayt:Forbidden",
+    "code": {
+      "@id": "frayt:code",
+      "@type": "xsd:string"
+    },
+    "message": {
+      "@id": "frayt:message",
+      "@type": "xsd:string"
+    },
+    "Label": "frayt:Label",
+    "format": {
+      "@id": "frayt:format",
+      "@type": "xsd:string"
+    },
+    "value": {
+      "@id": "frayt:value",
+      "@type": "xsd:string"
+    },
+    "Not_Found": "frayt:Not_Found",
+    "Contact": "frayt:Contact",
+    "email": {
+      "@id": "frayt:email",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "frayt:name",
+      "@type": "xsd:string"
+    },
+    "notify": {
+      "@id": "frayt:notify",
+      "@type": "xsd:boolean"
+    },
+    "phone_number": {
+      "@id": "frayt:phone_number",
+      "@type": "xsd:string"
+    },
+    "MatchStop": "frayt:MatchStop",
+    "arrived_at": {
+      "@id": "frayt:arrived_at",
+      "@type": "xsd:dateTime"
+    },
+    "cargo_location": {
+      "@id": "frayt:cargo_location",
+      "@type": "xsd:string"
+    },
+    "cargo_location_required": {
+      "@id": "frayt:cargo_location_required",
+      "@type": "xsd:boolean"
+    },
+    "delivered_at": {
+      "@id": "frayt:delivered_at",
+      "@type": "xsd:dateTime"
+    },
+    "delivery_notes": {
+      "@id": "frayt:delivery_notes",
+      "@type": "xsd:string"
+    },
+    "destination_address": {
+      "@id": "frayt:destination_address"
+    },
+    "destination_photo": {
+      "@id": "frayt:destination_photo",
+      "@type": "@id"
+    },
+    "destination_photo_required": {
+      "@id": "frayt:destination_photo_required",
+      "@type": "xsd:boolean"
+    },
+    "destination_photos": {
+      "@id": "frayt:destination_photos",
+      "@container": "@list"
+    },
+    "driver_tip": {
+      "@id": "frayt:driver_tip",
+      "@type": "xsd:decimal"
+    },
+    "dropoff_by": {
+      "@id": "frayt:dropoff_by",
+      "@type": "xsd:dateTime"
+    },
+    "electronic_bill_of_lading_photo": {
+      "@id": "frayt:electronic_bill_of_lading_photo",
+      "@type": "@id"
+    },
+    "has_load_fee": {
+      "@id": "frayt:has_load_fee",
+      "@type": "xsd:boolean"
+    },
+    "id": {
+      "@id": "frayt:id",
+      "@type": "xsd:string"
+    },
+    "id_verification_required": {
+      "@id": "frayt:id_verification_required",
+      "@type": "xsd:boolean"
+    },
+    "id_verified_at": {
+      "@id": "frayt:id_verified_at",
+      "@type": "xsd:dateTime"
+    },
+    "identifier": {
+      "@id": "frayt:identifier",
+      "@type": "xsd:string"
+    },
+    "index": {
+      "@id": "frayt:index",
+      "@type": "xsd:integer"
+    },
+    "items": {
+      "@id": "frayt:items",
+      "@container": "@list"
+    },
+    "minimum_age": {
+      "@id": "frayt:minimum_age",
+      "@type": "xsd:integer"
+    },
+    "needs_pallet_jack": {
+      "@id": "frayt:needs_pallet_jack",
+      "@type": "xsd:boolean"
+    },
+    "po": {
+      "@id": "frayt:po",
+      "@type": "xsd:string"
+    },
+    "recipient": {
+      "@id": "frayt:recipient"
+    },
+    "route_index": {
+      "@id": "frayt:route_index",
+      "@type": "xsd:integer"
+    },
+    "self_recipient": {
+      "@id": "frayt:self_recipient",
+      "@type": "xsd:boolean"
+    },
+    "signature_instructions": {
+      "@id": "frayt:signature_instructions",
+      "@type": "xsd:string"
+    },
+    "signature_name": {
+      "@id": "frayt:signature_name",
+      "@type": "xsd:string"
+    },
+    "signature_photo": {
+      "@id": "frayt:signature_photo",
+      "@type": "@id"
+    },
+    "signature_required": {
+      "@id": "frayt:signature_required",
+      "@type": "xsd:boolean"
+    },
+    "signature_type": {
+      "@id": "frayt:signature_type",
+      "@type": "xsd:string"
+    },
+    "state": {
+      "@id": "frayt:state",
+      "@type": "xsd:string"
+    },
+    "state_transition": {
+      "@id": "frayt:state_transition"
+    },
+    "timeframe": {
+      "@id": "frayt:timeframe"
+    },
+    "tracking_url": {
+      "@id": "frayt:tracking_url",
+      "@type": "@id"
+    },
+    "travel_duration": {
+      "@id": "frayt:travel_duration",
+      "@type": "xsd:integer"
+    },
+    "undeliverable_at": {
+      "@id": "frayt:undeliverable_at",
+      "@type": "xsd:dateTime"
+    },
+    "undeliverable_code": {
+      "@id": "frayt:undeliverable_code",
+      "@type": "xsd:string"
+    },
+    "MatchStopItem": "frayt:MatchStopItem",
+    "barcode": {
+      "@id": "frayt:barcode",
+      "@type": "xsd:string"
+    },
+    "barcode_delivery_required": {
+      "@id": "frayt:barcode_delivery_required",
+      "@type": "xsd:boolean"
+    },
+    "barcode_pickup_required": {
+      "@id": "frayt:barcode_pickup_required",
+      "@type": "xsd:boolean"
+    },
+    "barcode_readings": {
+      "@id": "frayt:barcode_readings",
+      "@container": "@list"
+    },
+    "container_barcode": {
+      "@id": "frayt:container_barcode",
+      "@type": "xsd:string"
+    },
+    "declared_value": {
+      "@id": "frayt:declared_value",
+      "@type": "xsd:integer"
+    },
+    "description": {
+      "@id": "frayt:description",
+      "@type": "xsd:string"
+    },
+    "height": {
+      "@id": "frayt:height",
+      "@type": "xsd:decimal"
+    },
+    "length": {
+      "@id": "frayt:length",
+      "@type": "xsd:decimal"
+    },
+    "pieces": {
+      "@id": "frayt:pieces",
+      "@type": "xsd:integer"
+    },
+    "type": {
+      "@id": "frayt:type",
+      "@type": "xsd:string"
+    },
+    "volume": {
+      "@id": "frayt:volume",
+      "@type": "xsd:integer"
+    },
+    "weight": {
+      "@id": "frayt:weight",
+      "@type": "xsd:decimal"
+    },
+    "width": {
+      "@id": "frayt:width",
+      "@type": "xsd:decimal"
+    },
+    "MatchRequest": "frayt:MatchRequest",
+    "accessorials": {
+      "@id": "frayt:accessorials",
+      "@container": "@list"
+    },
+    "bill_of_lading_required": {
+      "@id": "frayt:bill_of_lading_required",
+      "@type": "xsd:boolean"
+    },
+    "contract": {
+      "@id": "frayt:contract",
+      "@type": "xsd:string"
+    },
+    "dropoff_at": {
+      "@id": "frayt:dropoff_at",
+      "@type": "xsd:dateTime"
+    },
+    "label": {
+      "@id": "frayt:label"
+    },
+    "optimize": {
+      "@id": "frayt:optimize",
+      "@type": "xsd:boolean"
+    },
+    "origin_address": {
+      "@id": "frayt:origin_address"
+    },
+    "origin_photo_required": {
+      "@id": "frayt:origin_photo_required",
+      "@type": "xsd:boolean"
+    },
+    "parking_spot_required": {
+      "@id": "frayt:parking_spot_required",
+      "@type": "xsd:boolean"
+    },
+    "pickup_at": {
+      "@id": "frayt:pickup_at",
+      "@type": "xsd:dateTime"
+    },
+    "pickup_notes": {
+      "@id": "frayt:pickup_notes",
+      "@type": "xsd:string"
+    },
+    "platform": {
+      "@id": "frayt:platform",
+      "@type": "xsd:string"
+    },
+    "preferred_driver_email": {
+      "@id": "frayt:preferred_driver_email",
+      "@type": "xsd:string"
+    },
+    "preferred_driver_id": {
+      "@id": "frayt:preferred_driver_id",
+      "@type": "xsd:string"
+    },
+    "route_identifier": {
+      "@id": "frayt:route_identifier",
+      "@type": "xsd:string"
+    },
+    "schedule_id": {
+      "@id": "frayt:schedule_id",
+      "@type": "xsd:string"
+    },
+    "scheduled": {
+      "@id": "frayt:scheduled",
+      "@type": "xsd:boolean"
+    },
+    "self_sender": {
+      "@id": "frayt:self_sender",
+      "@type": "xsd:boolean"
+    },
+    "sender": {
+      "@id": "frayt:sender"
+    },
+    "service_level": {
+      "@id": "frayt:service_level",
+      "@type": "xsd:integer"
+    },
+    "shipper_email": {
+      "@id": "frayt:shipper_email",
+      "@type": "xsd:string"
+    },
+    "stops": {
+      "@id": "frayt:stops",
+      "@container": "@list"
+    },
+    "unload_method": {
+      "@id": "frayt:unload_method",
+      "@type": "xsd:string"
+    },
+    "vehicle_class": {
+      "@id": "frayt:vehicle_class"
+    },
+    "UpdateEstimateRequest": "frayt:UpdateEstimateRequest",
+    "Stop_Timeframe": "frayt:Stop_Timeframe",
+    "planned": {
+      "@id": "frayt:planned"
+    },
+    "MatchResponse": "frayt:MatchResponse",
+    "response": {
+      "@id": "frayt:response",
+      "@type": "@id"
+    },
+    "NewMatchStopItem": "frayt:NewMatchStopItem",
+    "Update_MatchStop": "frayt:Update_MatchStop",
+    "tip_price": {
+      "@id": "frayt:tip_price",
+      "@type": "xsd:integer"
+    },
+    "Accessorial": "frayt:Accessorial",
+    "key": {
+      "@id": "frayt:key",
+      "@type": "xsd:string"
+    },
+    "Unauthorized": "frayt:Unauthorized",
+    "SLA": "frayt:SLA",
+    "completed_at": {
+      "@id": "frayt:completed_at",
+      "@type": "xsd:dateTime"
+    },
+    "end_time": {
+      "@id": "frayt:end_time",
+      "@type": "xsd:dateTime"
+    },
+    "start_time": {
+      "@id": "frayt:start_time",
+      "@type": "xsd:dateTime"
+    },
+    "Driver": "frayt:Driver",
+    "current_location": {
+      "@id": "frayt:current_location"
+    },
+    "first_name": {
+      "@id": "frayt:first_name",
+      "@type": "xsd:string"
+    },
+    "last_name": {
+      "@id": "frayt:last_name",
+      "@type": "xsd:string"
+    },
+    "vehicle_make": {
+      "@id": "frayt:vehicle_make",
+      "@type": "xsd:string"
+    },
+    "vehicle_model": {
+      "@id": "frayt:vehicle_model",
+      "@type": "xsd:string"
+    },
+    "vehicle_year": {
+      "@id": "frayt:vehicle_year",
+      "@type": "xsd:string"
+    },
+    "UpdateMatchStopItem": "frayt:UpdateMatchStopItem",
+    "Timeframe": "frayt:Timeframe",
+    "earliest_arrival": {
+      "@id": "frayt:earliest_arrival",
+      "@type": "xsd:dateTime"
+    },
+    "latest_arrival": {
+      "@id": "frayt:latest_arrival",
+      "@type": "xsd:dateTime"
+    },
+    "latest_completion": {
+      "@id": "frayt:latest_completion",
+      "@type": "xsd:dateTime"
+    },
+    "Match": "frayt:Match",
+    "accepted_at": {
+      "@id": "frayt:accepted_at",
+      "@type": "xsd:dateTime"
+    },
+    "activated_at": {
+      "@id": "frayt:activated_at",
+      "@type": "xsd:dateTime"
+    },
+    "bill_of_lading_photo": {
+      "@id": "frayt:bill_of_lading_photo",
+      "@type": "@id"
+    },
+    "cancel_code": {
+      "@id": "frayt:cancel_code",
+      "@type": "xsd:string"
+    },
+    "cancel_reason": {
+      "@id": "frayt:cancel_reason",
+      "@type": "xsd:string"
+    },
+    "canceled_at": {
+      "@id": "frayt:canceled_at",
+      "@type": "xsd:dateTime"
+    },
+    "coupon": {
+      "@id": "frayt:coupon"
+    },
+    "defaults": {
+      "@id": "frayt:defaults"
+    },
+    "driver": {
+      "@id": "frayt:driver"
+    },
+    "inserted_at": {
+      "@id": "frayt:inserted_at",
+      "@type": "xsd:dateTime"
+    },
+    "origin_photo": {
+      "@id": "frayt:origin_photo",
+      "@type": "@id"
+    },
+    "origin_photos": {
+      "@id": "frayt:origin_photos",
+      "@container": "@list"
+    },
+    "picked_up_at": {
+      "@id": "frayt:picked_up_at",
+      "@type": "xsd:dateTime"
+    },
+    "preferred_driver": {
+      "@id": "frayt:preferred_driver",
+      "@type": "xsd:string"
+    },
+    "rating": {
+      "@id": "frayt:rating",
+      "@type": "xsd:integer"
+    },
+    "required_fields": {
+      "@id": "frayt:required_fields"
+    },
+    "route_id": {
+      "@id": "frayt:route_id",
+      "@type": "xsd:string"
+    },
+    "shortcode": {
+      "@id": "frayt:shortcode",
+      "@type": "xsd:string"
+    },
+    "slas": {
+      "@id": "frayt:slas",
+      "@container": "@list"
+    },
+    "total_distance": {
+      "@id": "frayt:total_distance",
+      "@type": "xsd:decimal"
+    },
+    "total_price": {
+      "@id": "frayt:total_price",
+      "@type": "xsd:decimal"
+    },
+    "total_volume": {
+      "@id": "frayt:total_volume",
+      "@type": "xsd:integer"
+    },
+    "total_weight": {
+      "@id": "frayt:total_weight",
+      "@type": "xsd:integer"
+    },
+    "Address": "frayt:Address",
+    "address": {
+      "@id": "frayt:address",
+      "@type": "xsd:string"
+    },
+    "address2": {
+      "@id": "frayt:address2",
+      "@type": "xsd:string"
+    },
+    "city": {
+      "@id": "frayt:city",
+      "@type": "xsd:string"
+    },
+    "country_code": {
+      "@id": "frayt:country_code",
+      "@type": "xsd:string"
+    },
+    "formatted_address": {
+      "@id": "frayt:formatted_address",
+      "@type": "xsd:string"
+    },
+    "lat": {
+      "@id": "frayt:lat",
+      "@type": "xsd:decimal"
+    },
+    "lng": {
+      "@id": "frayt:lng",
+      "@type": "xsd:decimal"
+    },
+    "neighborhood": {
+      "@id": "frayt:neighborhood",
+      "@type": "xsd:string"
+    },
+    "state_code": {
+      "@id": "frayt:state_code",
+      "@type": "xsd:string"
+    },
+    "zip": {
+      "@id": "frayt:zip",
+      "@type": "xsd:string"
+    },
+    "New_MatchStop": "frayt:New_MatchStop",
+    "AddressRequest": "frayt:AddressRequest",
+    "Barcode_Reading": "frayt:Barcode_Reading",
+    "photo": {
+      "@id": "frayt:photo",
+      "@type": "xsd:string"
+    },
+    "Invalid_Parameters": "frayt:Invalid_Parameters",
+    "errors": {
+      "@id": "frayt:errors",
+      "@container": "@list"
+    },
+    "Unprocessible_Entity": "frayt:Unprocessible_Entity",
+    "MatchStopResponse": "frayt:MatchStopResponse",
+    "Bad_Request": "frayt:Bad_Request",
+    "UpdateDriverTip": "frayt:UpdateDriverTip",
+    "tip": {
+      "@id": "frayt:tip",
+      "@type": "xsd:integer"
+    },
+    "RestrictedUpdateMatchRequest": "frayt:RestrictedUpdateMatchRequest",
+    "CancelMatchRequest": "frayt:CancelMatchRequest",
+    "Oauth_Request": "frayt:Oauth_Request",
+    "client_id": {
+      "@id": "frayt:client_id",
+      "@type": "xsd:string"
+    },
+    "client_secret": {
+      "@id": "frayt:client_secret",
+      "@type": "xsd:string"
+    },
+    "secret": {
+      "@id": "frayt:secret",
+      "@type": "xsd:string"
+    },
+    "Oauth_Response": "frayt:Oauth_Response"
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "FRAYT API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects FRAYT's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-20) from openapi/frayt-match-estimates-api-openapi.yml, openapi/frayt-matches-api-openapi.yml, openapi/frayt-oauth-api-openapi.yml.",
+  "dcterms:created": "2026-10-20",
+  "dcterms:source": [
+    "openapi/frayt-match-estimates-api-openapi.yml",
+    "openapi/frayt-matches-api-openapi.yml",
+    "openapi/frayt-oauth-api-openapi.yml"
+  ]
+}

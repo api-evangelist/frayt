@@ -3,7 +3,93 @@ info:
   description: 'Introduction
 
 
-    Welcome to the FRAYT''s REST API.'
+    Welcome to the FRAYT''s REST API. Each endpoint is documented individually, and the endpoints are categorized by the resource that they primarily affect (Matches, and OAuth). By following the outlined schema of each endpoint, our API allows you to integrate FRAYT''s logistics services seamlessly into your application.
+
+
+    FRAYT Terminology
+
+
+    The logistics industry tends to have a wide variety of terms for a single item. So let''s make sure we define our terms before getting into the API:
+
+
+    Match: this is an individual order placed in the FRAYT system for a driver to deliver
+
+
+    Estimate: this provides a dollar amount in the response prior to it becoming a match. Estimates can be authorized into matches by passing the same payload but to the matches endpoint
+
+
+    FRAYT Workflows
+
+
+    Now that we have our terms defined, let''s paint a bigger picture of what the life of a match looks like. These examples are the most common but are by no means exhaustive.
+
+
+    Golden Path: Pending (estimate)->Assigning Driver (live match to whole marketplace)->Accepted (by a driver)->En Route to Pickup->Arrived at Pickup->Picked Up*->Completed (delivered)->Charged
+
+
+    Unable to Pickup: Pending->Assigning Driver->Accepted>En Route to Pickup->Arrived at Pickup->Unable to Pickup
+
+
+    Unable to Dropoff: Pending->Assigning Driver->Accepted->En Route to Pickup->Arrived at Pickup->Picked Up*->En Route to Return->Arrived at Return->Charged
+
+
+    Preferred Driver: Pending->Offered (only to preferred driver, not marketplace)->Accepted->En Route to Pickup->Arrived at Pickup->Picked Up*->Completed->Charged
+
+
+    *Once a match is picked up, the match.stop state changes from Pending–>En Route–>Arrived–>Signed–>Delivered or Returned
+
+
+    Endpoints and Requests
+
+
+    The FRAYT API endpoints are organized as matches, match estimates, and oauth. Once authentication has been made, the primary endpoint used will be the Matches endpoint for all estimates and matches.
+
+
+    Our endpoints have a base url of https://api.frayt.com/api/v2.2/
+
+
+    The schema for each endpoint lists the properties and provides a brief description to provide context for your mapping needs. Additionally, all required properties are listed with a red asterisk (*).
+
+
+    Authentication
+
+
+    All FRAYT API requests require a valid bearer token. To generate your bearer token, you will need to hit the OAuth endpoint passing your Client ID and Secret in the payload.
+
+    To acquire your Client ID and Secret, reach out to the FRAYT team at dev@frayt.com.
+
+
+    Match Estimates
+
+
+    The match estimates endpoint provides the ability to get a rate estimate, create a match, update an estimate, or turn an estimate into a match.
+
+
+    To receive an estimated rate for a delivery without creating the match itself, hit the POST match estimates endpoint.
+
+
+    To turn the estimate into a delivery (what we call a match at FRAYT), make a call to ouar PATCH match estimates endpoint.
+
+
+    Matches
+
+
+    The matches endpoint provides the ability to create a match, update a match, add a tip, or cancel a match.
+
+
+    To tender a delivery (what we call a match at FRAYT), pass the required payload to our POST matches endpoint.
+
+
+    To fetch data on a match at any point, hit the GET /matches/{id} endpoint.
+
+
+    Webhooks
+
+
+    Webhook payloads are defined in the callbacks of each method below. You can find detailed state information under the response Schema of each callback.
+
+
+    To receive webhook updates from FRAYT, contact the FRAYT team for setup and configuration at dev@frayt.com'
   title: FRAYT Client OAuth API
   version: '2.2'
 servers:
@@ -49,6 +135,20 @@ paths:
       - OAuth
 components:
   schemas:
+    Forbidden:
+      description: Invalid/expired credentials were provided or permissions are insufficient
+      example:
+        code: forbidden
+        message: string
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Human readable message explaining the error
+          type: string
+      title: Forbidden
+      type: object
     Invalid_Parameters:
       description: Error response when invalid paramaters are passed
       properties:
@@ -67,20 +167,6 @@ components:
             type: object
           type: array
       title: Invalid Parameters
-      type: object
-    Forbidden:
-      description: Invalid/expired credentials were provided or permissions are insufficient
-      example:
-        code: forbidden
-        message: string
-      properties:
-        code:
-          description: Error code
-          type: string
-        message:
-          description: Human readable message explaining the error
-          type: string
-      title: Forbidden
       type: object
     Oauth_Request:
       description: Company Oauth credentials

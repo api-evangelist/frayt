@@ -1,10 +1,11 @@
 ---
-name: Track a FRAYT delivery through its lifecycle
+name: frayt-track-delivery-lifecycle
+title: Track a FRAYT delivery through its lifecycle
 description: >-
   Follow a FRAYT Match from dispatch to charge — read its state, interpret the match
   and stop state machines correctly, consume the match_update webhook, and know
   which states are actually terminal.
-api: openapi/frayt-matches-openapi.yml
+api: openapi/frayt-matches-api-openapi.yml
 generated: '2026-08-16'
 method: generated
 source: >-

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/frayt/main/json-schema/frayt-oauth-request-schema.json",
+  "title": "Oauth Request",
+  "description": "Company Oauth credentials",
+  "x-generated": "2026-10-20",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/frayt-oauth-api-openapi.yml#/components/schemas/Oauth_Request",
+  "properties": {
+    "client_id": {
+      "description": "Required client ID",
+      "type": "string"
+    },
+    "client_secret": {
+      "description": "Client secret key (optional if secret is present)",
+      "type": "string"
+    },
+    "secret": {
+      "description": "Secret key (optional if client_secret is present)",
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id"
+  ],
+  "type": "object"
+}

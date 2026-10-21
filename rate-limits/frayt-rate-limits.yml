@@ -1,5 +1,6 @@
+name: FRAYT rate limits
 generated: '2026-08-16'
-method: probed
+method: none
 source: https://api.frayt.com/docs/api/v2.2 + live unauthenticated responses from https://api.frayt.com/api/v2.2/
 limit_count: 0
 note: >-
