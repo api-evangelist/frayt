@@ -64,14 +64,157 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand and scheduled
-middle-mile and last-mile delivery marketplace, connecting shippers to a vetted nationwide
-network of owner-operator drivers running everything from cars through cargo vans and box
-trucks. The FRAYT Client API is a versioned REST API (v2.2) over JSON that prices a delivery
-as an "estimate", authorizes it into a "match", tracks it through the driver lifecycle, and
-delivers state changes over webhooks declared inline in the OpenAPI itself.
+FRAYT (Frayt Technologies, Inc., Cincinnati, Ohio) operates an on-demand and scheduled middle-mile and last-mile delivery marketplace that connects shippers to a vetted nationwide network of owner-operator drivers running everything from cars and midsize vehicles to pickups, cargo vans and box trucks. The FRAYT Client API is a versioned REST API (v2.2) over JSON, secured with OAuth 2.0 client-credentials bearer tokens, that lets a TMS, ERP or storefront price a delivery as an "estimate", authorize it into a "match", track it through the driver lifecycle, tip a driver and cancel it — with webhook callbacks defined in the OpenAPI itself for real-time match and driver-location updates. A full sandbox environment mirrors production.
 
-- Website: https://www.frayt.com/
-- API guide: https://www.frayt.com/frayt-api
-- API reference: https://api.frayt.com/docs/api/v2.2
-- OpenAPI: https://api.frayt.com/api/v2.2/openapi
+**Areas:** Company · Last Mile Delivery · Logistics · Couriers · On-Demand Delivery · Shipping · Freight · Supply Chain · Transportation · Third Party Logistics · Delivery Tracking · Webhook
+
+## FRAYT on APIs.io
+
+Everything profiled for FRAYT is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/frayt/](https://apis.io/providers/frayt/)** — or go straight to one of the APIs or properties below.
+
+### APIs (3)
+
+- [FRAYT match estimates API](https://apis.io/apis/frayt/frayt-match-estimates-api/) — The match estimates API from FRAYT — 2 operation(s) for match estimates.
+- [FRAYT Matches API](https://apis.io/apis/frayt/frayt-matches-api/) — The matches API from FRAYT — 3 operation(s) for matches.
+- [FRAYT OAUTH API](https://apis.io/apis/frayt/frayt-oauth-api/) — The oauth API from FRAYT — 1 operation(s) for oauth.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Frayt Match Webhooks](https://apis.io/asyncapis/frayt/frayt-match-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [frayt](https://apis.io/servers/frayt/frayt/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Frayt Agentic Access](https://apis.io/agentic-access/frayt/frayt-agentic-access/)
+
+#### JSON Schema (9)
+
+The data models the API reads and writes.
+
+- [CancelMatchRequest](https://apis.io/schemas/frayt/frayt-cancel-match-request/)
+- [MatchRequest](https://apis.io/schemas/frayt/frayt-match-request/)
+- [MatchResponse](https://apis.io/schemas/frayt/frayt-match-response/)
+- [MatchStopResponse](https://apis.io/schemas/frayt/frayt-match-stop-response/)
+- [Oauth Request](https://apis.io/schemas/frayt/frayt-oauth-request/)
+- [Oauth Response](https://apis.io/schemas/frayt/frayt-oauth-response/)
+- [RestrictedUpdateMatchRequest](https://apis.io/schemas/frayt/frayt-restricted-update-match-request/)
+- [UpdateDriverTip](https://apis.io/schemas/frayt/frayt-update-driver-tip/)
+- [UpdateEstimateRequest](https://apis.io/schemas/frayt/frayt-update-estimate-request/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Frayt Context](https://apis.io/jsonld/frayt/frayt-context/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Frayt Matches Overlay](https://apis.io/overlays/frayt/frayt-matches-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [FRAYT API Rules](https://apis.io/rules/frayt/frayt-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Frayt Authentication](https://apis.io/security/frayt/frayt-authentication/)
+- [Frayt Domain Security](https://apis.io/security/frayt/frayt-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Frayt Plans Pricing](https://apis.io/plans/frayt/frayt-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Frayt Rate Limits](https://apis.io/rate-limits/frayt/frayt-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.frayt.com/)
+- [Documentation](https://dev.frayt.com/)
+- [Sign up](https://www.frayt.app/)
+- [Support](https://www.frayt.com/contact)
+- [Blog](https://www.frayt.com/resources/blog)
+- [Terms of service](https://www.frayt.com/eula)
+- [Privacy policy](https://www.frayt.com/privacy-policy)
+- [GitHub](https://github.com/Frayt-Technologies)
+
+## API Evangelist rating
+
+**Kin Score 49.7** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 82.1 |
+| Contract quality | 71.6 |
+| Contract governance | 22.0 |
+| Operational transparency | 10.5 |
+| Developer ergonomics | 73.2 |
+| Access clarity | 21.1 |
+
+**Agent readiness 36.4** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/frayt/](https://apis.io/providers/frayt/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for FRAYT: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/frayt/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
